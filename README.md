@@ -1,4 +1,4 @@
-# DSA Forge 🔥 — AI-Powered Interview Tracker
+# DSA Forge 🔥 — AI-Powered DSA Tracker
 
 > "Developed an AI-powered DSA Tracker with spaced repetition, performance analytics, and mock interview simulation to optimize coding interview preparation."
 
