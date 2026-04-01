@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Forge — Interview Preparation Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #1a1a24;
+  --bg4: #22222f;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8e8f0;
+  --text2: #9090a8;
+  --text3: #5a5a70;
+  --accent: #6c63ff;
+  --accent2: #8b85ff;
+  --green: #22c55e;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --cyan: #06b6d4;
+  --orange: #f97316;
+  --pink: #ec4899;
+  --easy: #22c55e;
+  --medium: #f59e0b;
+  --hard: #ef4444;
+}
+[data-theme="light"] {
+  --bg: #f4f4f8;
+  --bg2: #ffffff;
+  --bg3: #ebebf3;
+  --bg4: #dddde8;
+  --border: rgba(0,0,0,0.06);
+  --border2: rgba(0,0,0,0.12);
+  --text: #1a1a2e;
+  --text2: #5a5a78;
+  --text3: #9090a8;
+  --accent: #5b52e8;
+  --accent2: #7b74f8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Layout */
+.app { display:flex; height:100vh; overflow:hidden; }
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+}
+.main { flex:1; overflow-y:auto; }
+
+/* Sidebar */
+.logo {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.logo-text { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+.logo-text span { color: var(--accent2); }
+.nav { padding: 12px 8px; flex:1; }
+.nav-section { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 12px 4px; margin-top: 8px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  cursor: pointer; font-size: 14px; font-weight: 600;
+  color: var(--text2); transition: all 0.15s; margin: 1px 0;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--accent); color: #fff; }
+.nav-item .icon { font-size: 16px; width: 18px; text-align: center; }
+.nav-badge {
+  margin-left: auto; background: var(--bg4);
+  font-size: 11px; padding: 2px 7px; border-radius: 20px;
+  color: var(--text2); font-family: 'JetBrains Mono', monospace;
+}
+.nav-item.active .nav-badge { background: rgba(255,255,255,0.2); color: white; }
+.sidebar-streak {
+  margin: 8px; padding: 12px; background: var(--bg3);
+  border-radius: 10px; border: 1px solid var(--border);
+}
+.streak-val { font-size: 22px; font-weight: 800; color: var(--orange); }
+.streak-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.streak-fire { font-size: 18px; }
+.theme-toggle {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  cursor: pointer; font-size: 13px; color: var(--text2);
+  display: flex; align-items: center; gap: 8px;
+}
+.theme-toggle:hover { color: var(--text); }
+
+/* Page */
+.page { display:none; padding: 28px 32px; min-height: 100%; }
+.page.active { display:block; }
+.page-header { margin-bottom: 28px; }
+.page-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.page-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
+
+/* Cards */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+.card-sm { padding: 14px 16px; border-radius: 10px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.stat-val { font-size: 28px; font-weight: 800; line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text2); margin-top: 4px; font-weight: 600; }
+.stat-trend { font-size: 12px; margin-top: 6px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 8px; border: none;
+  cursor: pointer; font-size: 13px; font-weight: 700;
+  font-family: 'Syne', sans-serif; transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+.btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
+.btn-secondary:hover { background: var(--bg4); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.btn-danger:hover { background: rgba(239,68,68,0.25); }
+.btn-success { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.btn-success:hover { background: rgba(34,197,94,0.25); }
+
+/* Tags/Badges */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+}
+.badge-easy { background: rgba(34,197,94,0.12); color: var(--easy); }
+.badge-medium { background: rgba(245,158,11,0.12); color: var(--medium); }
+.badge-hard { background: rgba(239,68,68,0.12); color: var(--hard); }
+.badge-solved { background: rgba(34,197,94,0.1); color: var(--green); }
+.badge-revision { background: rgba(245,158,11,0.1); color: var(--yellow); }
+.badge-pending { background: rgba(90,90,112,0.2); color: var(--text2); }
+.badge-topic {
+  background: rgba(108,99,255,0.1); color: var(--accent2);
+  padding: 2px 8px; border-radius: 6px; font-size: 11px;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600;
+}
+.badge-company {
+  background: rgba(6,182,212,0.1); color: var(--cyan);
+  padding: 2px 8px; border-radius: 6px; font-size: 11px;
+  font-family: 'JetBrains Mono', monospace; font-weight: 600;
+}
+
+/* Forms */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 6px; display: block; letter-spacing: 0.5px; text-transform: uppercase; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px; padding: 9px 12px;
+  color: var(--text); font-size: 14px;
+  font-family: 'Syne', sans-serif;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+}
+.form-select option { background: var(--bg3); }
+.form-textarea { resize: vertical; min-height: 100px; font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:hover td { background: var(--bg3); }
+tr:last-child td { border-bottom: none; }
+
+/* Search/Filter bar */
+.filter-bar { display: flex; gap: 10px; margin-bottom: 18px; align-items: center; flex-wrap: wrap; }
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; }
+.search-input { width: 100%; padding: 8px 12px 8px 32px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-size: 13px; outline: none; font-family: 'Syne', sans-serif; }
+.search-input:focus { border-color: var(--accent); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 28px;
+  width: 90%; max-width: 640px; max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-size: 18px; font-weight: 800; }
+.modal-close { cursor: pointer; color: var(--text2); font-size: 20px; line-height: 1; background: none; border: none; color: var(--text2); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+/* Progress */
+.progress-bar-wrap { background: var(--bg4); border-radius: 999px; height: 6px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 999px; transition: width 0.5s ease; }
+
+/* Topic Cards */
+.topics-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.topic-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.15s; }
+.topic-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.topic-card-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.topic-card-stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+
+/* Heatmap */
+.heatmap { display: grid; gap: 3px; }
+.heatmap-row { display: flex; gap: 3px; }
+.heatmap-cell {
+  width: 14px; height: 14px; border-radius: 3px;
+  background: var(--bg4); transition: all 0.15s;
+}
+.heatmap-cell:hover { transform: scale(1.3); }
+.heatmap-cell[data-count="1"] { background: rgba(108,99,255,0.25); }
+.heatmap-cell[data-count="2"] { background: rgba(108,99,255,0.45); }
+.heatmap-cell[data-count="3"] { background: rgba(108,99,255,0.65); }
+.heatmap-cell[data-count="4"] { background: rgba(108,99,255,0.85); }
+.heatmap-cell[data-count="5"] { background: var(--accent); }
+
+/* AI Chat */
+.ai-messages { max-height: 380px; overflow-y: auto; margin-bottom: 14px; display: flex; flex-direction: column; gap: 12px; }
+.ai-message { padding: 12px 16px; border-radius: 10px; font-size: 13px; line-height: 1.6; }
+.ai-message.user { background: var(--accent); color: white; align-self: flex-end; max-width: 80%; }
+.ai-message.ai { background: var(--bg3); color: var(--text); align-self: flex-start; max-width: 90%; }
+.ai-message.ai .thinking { color: var(--text3); font-size: 12px; font-style: italic; }
+.ai-chat-input { display: flex; gap: 10px; }
+.ai-chat-input input { flex: 1; }
+
+/* Revision cards */
+.revision-list { display: flex; flex-direction: column; gap: 12px; }
+.revision-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.revision-due {
+  font-size: 11px; font-weight: 700; padding: 4px 10px;
+  border-radius: 6px; font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+.revision-due.today { background: rgba(239,68,68,0.15); color: var(--red); }
+.revision-due.soon { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.revision-due.future { background: rgba(34,197,94,0.1); color: var(--green); }
+.revision-info { flex: 1; }
+.revision-name { font-size: 14px; font-weight: 700; }
+.revision-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+/* Interview timer */
+.timer-display {
+  font-size: 72px; font-weight: 800; font-family: 'JetBrains Mono', monospace;
+  color: var(--accent); text-align: center; line-height: 1;
+  letter-spacing: -2px;
+}
+.timer-controls { display: flex; justify-content: center; gap: 14px; margin: 20px 0; }
+.interview-problem {
+  background: var(--bg3); border-radius: 12px; padding: 20px;
+  border-left: 3px solid var(--accent);
+}
+
+/* Notes markdown */
+.markdown-preview {
+  background: var(--bg3); border-radius: 10px;
+  padding: 16px; font-size: 13px; line-height: 1.7;
+  min-height: 100px;
+}
+.markdown-preview h1,.markdown-preview h2,.markdown-preview h3 { font-size: 15px; margin: 12px 0 6px; color: var(--accent2); }
+.markdown-preview code { background: var(--bg4); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan); }
+.markdown-preview pre { background: var(--bg); border-radius: 8px; padding: 12px; margin: 8px 0; overflow-x: auto; }
+.markdown-preview pre code { background: none; padding: 0; }
+.markdown-preview ul, .markdown-preview ol { padding-left: 20px; }
+.markdown-preview strong { color: var(--text); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg3); padding: 4px; border-radius: 10px; }
+.tab {
+  padding: 7px 16px; border-radius: 7px; cursor: pointer;
+  font-size: 13px; font-weight: 700; color: var(--text2);
+  transition: all 0.15s;
+}
+.tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+/* Confidence score */
+.conf-ring { position: relative; width: 80px; height: 80px; }
+.conf-ring svg { transform: rotate(-90deg); }
+.conf-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; }
+.conf-num { font-size: 18px; font-weight: 800; }
+.conf-sub { font-size: 9px; color: var(--text3); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.3s ease; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 1.5s infinite; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .topics-grid { grid-template-columns: repeat(2,1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .form-row-3 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">DSA <span>Forge</span></div>
+    </div>
+    <div class="nav">
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('problems')">
+        <span class="icon">📋</span> Problems
+        <span class="nav-badge" id="nb-problems">0</span>
+      </div>
+      <div class="nav-item" onclick="showPage('revision')">
+        <span class="icon">🔁</span> Revision
+        <span class="nav-badge" id="nb-revision">0</span>
+      </div>
+      <div class="nav-section">Practice</div>
+      <div class="nav-item" onclick="showPage('topics')">
+        <span class="icon">🗂️</span> Topics
+      </div>
+      <div class="nav-item" onclick="showPage('interview')">
+        <span class="icon">⏱️</span> Mock Interview
+      </div>
+      <div class="nav-section">Intelligence</div>
+      <div class="nav-item" onclick="showPage('analytics')">
+        <span class="icon">📈</span> Analytics
+      </div>
+      <div class="nav-item" onclick="showPage('ai')">
+        <span class="icon">🤖</span> AI Assistant
+      </div>
+      <div class="nav-item" onclick="showPage('notes')">
+        <span class="icon">📝</span> Notes
+      </div>
+    </div>
+
+    <div class="sidebar-streak">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="streak-fire">🔥</span>
+        <span class="streak-val" id="sidebar-streak">0</span>
+        <span style="font-size:11px;color:var(--text2);font-weight:600">day streak</span>
+      </div>
+      <div class="streak-label">Keep grinding to maintain your streak!</div>
+    </div>
+
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span id="theme-icon">☀️</span>
+      <span id="theme-text">Light Mode</span>
+    </div>
+    <div class="theme-toggle" onclick="resetAndReload()" style="color:var(--text3);font-size:12px;padding:8px 16px;border-top:none">
+      <span>↺</span><span>Reset to 200 Sample Problems</span>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Good Morning, Coder 👋</div>
+        <div class="page-sub" id="today-date"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--green)" id="stat-solved">0</div>
+          <div class="stat-label">Problems Solved</div>
+          <div class="stat-trend" style="color:var(--green)">✅ Total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--yellow)" id="stat-revision">0</div>
+          <div class="stat-label">Due for Revision</div>
+          <div class="stat-trend" style="color:var(--yellow)">🔁 Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--accent2)" id="stat-total">0</div>
+          <div class="stat-label">Total Problems</div>
+          <div class="stat-trend" style="color:var(--text2)">📋 Tracked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:var(--orange)" id="stat-streak">0🔥</div>
+          <div class="stat-label">Current Streak</div>
+          <div class="stat-trend" style="color:var(--orange)">🏆 Days</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div style="font-size:14px;font-weight:700">Activity Heatmap</div>
+            <div style="font-size:12px;color:var(--text2)">Last 6 months</div>
+          </div>
+          <div id="heatmap-container"></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--text2)">
+            Less
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--bg4)"></div>
+            <div style="width:12px;height:12px;border-radius:2px;background:rgba(108,99,255,0.25)"></div>
+            <div style="width:12px;height:12px;border-radius:2px;background:rgba(108,99,255,0.55)"></div>
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--accent)"></div>
+            More
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:12px">Daily Challenge</div>
+          <div id="daily-challenge-card" style="font-size:13px;">
+            <div style="color:var(--text2);margin-bottom:10px">Today's problem:</div>
+            <div id="daily-problem-name" style="font-weight:700;color:var(--accent2);font-size:15px;margin-bottom:6px;line-height:1.3"></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="daily-problem-tags"></div>
+            <button class="btn btn-primary btn-sm" onclick="markDailyDone()">Mark as Solved ✓</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">Topic Progress</div>
+          <div id="dash-topics"></div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">Difficulty Breakdown</div>
+          <div style="position:relative;height:180px"><canvas id="diffChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROBLEMS -->
+    <div class="page" id="page-problems">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="page-title">Problem Tracker</div>
+          <div class="page-sub">Track every problem you solve</div>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Add Problem</button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="search-input" placeholder="Search problems..." oninput="renderProblems()">
+        </div>
+        <select class="form-select" style="width:auto;padding:8px 12px;font-size:13px" id="filter-difficulty" onchange="renderProblems()">
+          <option value="">All Difficulties</option>
+          <option>Easy</option><option>Medium</option><option>Hard</option>
+        </select>
+        <select class="form-select" style="width:auto;padding:8px 12px;font-size:13px" id="filter-status" onchange="renderProblems()">
+          <option value="">All Status</option>
+          <option>Solved</option><option>Revision</option><option>Pending</option>
+        </select>
+        <select class="form-select" style="width:auto;padding:8px 12px;font-size:13px" id="filter-topic" onchange="renderProblems()">
+          <option value="">All Topics</option>
+        </select>
+      </div>
+
+      <div class="card" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Problem</th>
+                <th>Difficulty</th>
+                <th>Topic</th>
+                <th>Status</th>
+                <th>Platform</th>
+                <th>Time</th>
+                <th>Confidence</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="problems-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVISION -->
+    <div class="page" id="page-revision">
+      <div class="page-header">
+        <div class="page-title">Spaced Repetition</div>
+        <div class="page-sub">Problems scheduled using Day 1 → Day 3 → Day 7 → Day 15 formula</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchRevTab(this,'today')">Due Today</div>
+        <div class="tab" onclick="switchRevTab(this,'upcoming')">Upcoming</div>
+        <div class="tab" onclick="switchRevTab(this,'completed')">Completed</div>
+      </div>
+
+      <div id="revision-today" class="revision-tab">
+        <div class="revision-list" id="rev-list-today"></div>
+      </div>
+      <div id="revision-upcoming" class="revision-tab" style="display:none">
+        <div class="revision-list" id="rev-list-upcoming"></div>
+      </div>
+      <div id="revision-completed" class="revision-tab" style="display:none">
+        <div class="revision-list" id="rev-list-completed"></div>
+      </div>
+    </div>
+
+    <!-- TOPICS -->
+    <div class="page" id="page-topics">
+      <div class="page-header">
+        <div class="page-title">Topic Mastery</div>
+        <div class="page-sub">Track your progress by DSA topic</div>
+      </div>
+      <div class="topics-grid" id="topics-grid"></div>
+    </div>
+
+    <!-- MOCK INTERVIEW -->
+    <div class="page" id="page-interview">
+      <div class="page-header">
+        <div class="page-title">Mock Interview Mode</div>
+        <div class="page-sub">Simulate real interview conditions</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:16px">Interview Timer</div>
+          <div class="timer-display" id="timer-display">45:00</div>
+          <div class="timer-controls">
+            <button class="btn btn-primary" onclick="startTimer()">▶ Start</button>
+            <button class="btn btn-secondary" onclick="pauseTimer()">⏸ Pause</button>
+            <button class="btn btn-danger" onclick="resetTimer()">↺ Reset</button>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="setTimerDuration(20)">20 min</button>
+            <button class="btn btn-secondary btn-sm" onclick="setTimerDuration(30)">30 min</button>
+            <button class="btn btn-secondary btn-sm" onclick="setTimerDuration(45)">45 min</button>
+            <button class="btn btn-secondary btn-sm" onclick="setTimerDuration(60)">60 min</button>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div style="font-size:14px;font-weight:700">Random Problem</div>
+            <button class="btn btn-secondary btn-sm" onclick="generateInterviewProblem()">🎲 New Problem</button>
+          </div>
+          <div id="interview-problem-area">
+            <div style="color:var(--text2);font-size:13px;text-align:center;padding:20px">
+              Click "New Problem" to get a random DSA problem
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:14px">Session History</div>
+        <div id="session-history" style="font-size:13px;color:var(--text2);text-align:center;padding:20px">
+          No sessions yet. Start your first mock interview!
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="page-header">
+        <div class="page-title">Smart Analytics</div>
+        <div class="page-sub">Insights about your preparation</div>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom:20px">
+        <div class="stat-card">
+          <div class="stat-val" id="ana-accuracy">0%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="ana-avgtime">0m</div>
+          <div class="stat-label">Avg Solve Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="ana-weakest">—</div>
+          <div class="stat-label">Weakest Topic</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="ana-confidence">0</div>
+          <div class="stat-label">Avg Confidence</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">Problems by Topic</div>
+          <div style="position:relative;height:260px"><canvas id="topicChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:14px">Solve Time Distribution</div>
+          <div style="position:relative;height:260px"><canvas id="timeChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:14px;font-weight:700;margin-bottom:14px">Weak Areas 🎯</div>
+        <div id="weak-areas"></div>
+      </div>
+    </div>
+
+    <!-- AI ASSISTANT -->
+    <div class="page" id="page-ai">
+      <div class="page-header">
+        <div class="page-title">AI Assistant 🤖</div>
+        <div class="page-sub">Get hints, code analysis, and optimization suggestions</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px">
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase">Chat</div>
+          <div class="ai-messages" id="ai-messages">
+            <div class="ai-message ai">
+              👋 Hi! I'm your DSA AI Assistant. I can help you with:<br><br>
+              • 💡 <strong>Hints</strong> for problems you're stuck on<br>
+              • 🔍 <strong>Code analysis</strong> — paste your solution for review<br>
+              • 📈 <strong>Optimization tips</strong> to improve time/space complexity<br>
+              • 🧠 <strong>Concept explanations</strong> for any DSA topic<br><br>
+              What do you need help with today?
+            </div>
+          </div>
+          <div class="ai-chat-input">
+            <input class="form-input" id="ai-input" placeholder="Ask about a problem, concept, or paste your code..." style="flex:1" onkeydown="if(event.key==='Enter')sendAIMessage()">
+            <button class="btn btn-primary" onclick="sendAIMessage()">Send ↗</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card card-sm">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px">Quick Prompts</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <button class="btn btn-secondary btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickPrompt('Give me a hint for Two Sum problem without spoiling the solution')">💡 Hint for Two Sum</button>
+              <button class="btn btn-secondary btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickPrompt('Explain dynamic programming with a simple example')">🧠 Explain DP</button>
+              <button class="btn btn-secondary btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickPrompt('What are common mistakes in graph problems?')">🕸 Graph mistakes</button>
+              <button class="btn btn-secondary btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickPrompt('How to identify if a problem is a sliding window problem?')">🪟 Sliding Window tips</button>
+              <button class="btn btn-secondary btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickPrompt('Create a study plan for FAANG interviews in 3 months')">📅 FAANG study plan</button>
+              <button class="btn btn-secondary btn-sm" style="text-align:left;justify-content:flex-start" onclick="quickPrompt('Analyze my weak topics and suggest practice problems')">📊 Analyze my weaknesses</button>
+            </div>
+          </div>
+          <div class="card card-sm">
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px">API Key Required</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Enter your Anthropic API key to enable AI features</div>
+            <input class="form-input" id="api-key-input" type="password" placeholder="sk-ant-..." style="font-size:12px;margin-bottom:8px">
+            <button class="btn btn-primary btn-sm" onclick="saveAPIKey()">Save Key</button>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px">Key stored locally only. Never shared.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="page" id="page-notes">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="page-title">Notes & Approaches</div>
+          <div class="page-sub">Save your approaches and learnings with Markdown support</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNoteModal()">+ New Note</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:18px">
+        <div>
+          <div id="notes-list" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+        <div class="card" id="note-viewer">
+          <div style="color:var(--text2);font-size:13px;text-align:center;padding:40px">
+            Select a note to view
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ADD PROBLEM MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Add New Problem</div>
+      <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Problem Name *</label>
+        <input class="form-input" id="f-name" placeholder="e.g. Two Sum">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Platform</label>
+        <select class="form-select" id="f-platform">
+          <option>LeetCode</option>
+          <option>Codeforces</option>
+          <option>GeeksforGeeks</option>
+          <option>HackerRank</option>
+          <option>InterviewBit</option>
+          <option>Custom</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label class="form-label">Difficulty *</label>
+        <select class="form-select" id="f-difficulty">
+          <option>Easy</option><option>Medium</option><option>Hard</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Topic *</label>
+        <select class="form-select" id="f-topic">
+          <option>Arrays</option><option>Strings</option><option>Linked List</option>
+          <option>Trees</option><option>Graphs</option><option>Dynamic Programming</option>
+          <option>Backtracking</option><option>Binary Search</option><option>Sorting</option>
+          <option>Greedy</option><option>Stack/Queue</option><option>Heap</option>
+          <option>Trie</option><option>Math</option><option>Bit Manipulation</option>
+          <option>Two Pointers</option><option>Sliding Window</option><option>Recursion</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="f-status">
+          <option>Solved</option><option>Revision</option><option>Pending</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Time Taken (minutes)</label>
+        <input class="form-input" id="f-time" type="number" placeholder="e.g. 25" min="1">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confidence (1-5)</label>
+        <input class="form-input" id="f-confidence" type="number" placeholder="1-5" min="1" max="5">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Problem URL</label>
+        <input class="form-input" id="f-url" placeholder="https://leetcode.com/problems/...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Company Tags</label>
+        <input class="form-input" id="f-company" placeholder="Amazon, Google, Microsoft">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Approach / Notes (Markdown supported)</label>
+      <textarea class="form-textarea" id="f-notes" placeholder="## Approach&#10;- Use a HashMap&#10;- Time: O(n), Space: O(n)&#10;&#10;## Mistakes&#10;- Forgot edge case for empty array"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProblem()">Save Problem</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-header">
+      <div class="modal-title">New Note</div>
+      <button class="modal-close" onclick="closeModal('note-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input class="form-input" id="note-title" placeholder="e.g. DP State Transitions">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="note-category">
+        <option>General</option><option>Arrays</option><option>Dynamic Programming</option>
+        <option>Graphs</option><option>Trees</option><option>System Design</option>
+        <option>Interview Tips</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Content (Markdown)</label>
+      <textarea class="form-textarea" id="note-content" style="min-height:200px" placeholder="# My Note&#10;&#10;Write your notes here with **markdown** support..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('note-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DATA STORE ============
+let db = {
+  problems: [],
+  notes: [],
+  sessions: [],
+  streak: 0,
+  lastActive: null,
+  activity: {} // date -> count
+};
+
+const TOPICS = ['Arrays','Strings','Linked List','Trees','Graphs','Dynamic Programming','Backtracking','Binary Search','Sorting','Greedy','Stack/Queue','Heap','Trie','Math','Bit Manipulation','Two Pointers','Sliding Window','Recursion'];
+
+// 200 curated DSA problems across all topics
+const ALL_PROBLEMS_BANK = [
+  // ── ARRAYS (20) ──
+  {name:'Two Sum',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/two-sum/',company:'Amazon,Google,Microsoft'},
+  {name:'Best Time to Buy and Sell Stock',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/best-time-to-buy-and-sell-stock/',company:'Amazon,Facebook'},
+  {name:'Contains Duplicate',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/contains-duplicate/',company:'Amazon,Apple'},
+  {name:'Product of Array Except Self',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/product-of-array-except-self/',company:'Amazon,Facebook,Microsoft'},
+  {name:'Maximum Subarray',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/maximum-subarray/',company:'Amazon,Google,Microsoft'},
+  {name:'Maximum Product Subarray',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/maximum-product-subarray/',company:'Amazon,Google'},
+  {name:'Find Minimum in Rotated Sorted Array',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/',company:'Microsoft,Google'},
+  {name:'Search in Rotated Sorted Array',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/search-in-rotated-sorted-array/',company:'Amazon,Google,Facebook'},
+  {name:'3Sum',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/3sum/',company:'Amazon,Google,Microsoft'},
+  {name:'Container With Most Water',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/container-with-most-water/',company:'Amazon,Google,Bloomberg'},
+  {name:'Missing Number',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/missing-number/',company:'Microsoft,Google'},
+  {name:'Find All Duplicates in an Array',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/find-all-duplicates-in-an-array/',company:'Google'},
+  {name:'Rotate Array',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/rotate-array/',company:'Microsoft'},
+  {name:'Merge Intervals',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/merge-intervals/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Insert Interval',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/insert-interval/',company:'Google,LinkedIn'},
+  {name:'Non-overlapping Intervals',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/non-overlapping-intervals/',company:'Google'},
+  {name:'Move Zeroes',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/move-zeroes/',company:'Facebook,Bloomberg'},
+  {name:'Set Matrix Zeroes',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/set-matrix-zeroes/',company:'Amazon,Microsoft'},
+  {name:'Spiral Matrix',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/spiral-matrix/',company:'Microsoft,Google,Amazon'},
+  {name:'Jump Game',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/jump-game/',company:'Amazon,Google,Microsoft'},
+
+  // ── STRINGS (15) ──
+  {name:'Valid Anagram',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/valid-anagram/',company:'Amazon,Google,Facebook'},
+  {name:'Group Anagrams',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/group-anagrams/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Valid Palindrome',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/valid-palindrome/',company:'Facebook,Microsoft'},
+  {name:'Longest Palindromic Substring',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/longest-palindromic-substring/',company:'Amazon,Google,Microsoft'},
+  {name:'Palindromic Substrings',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/palindromic-substrings/',company:'Google,LinkedIn'},
+  {name:'Encode and Decode Strings',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/encode-and-decode-strings/',company:'Google,Facebook'},
+  {name:'Minimum Window Substring',diff:'Hard',topic:'Strings',url:'https://leetcode.com/problems/minimum-window-substring/',company:'Amazon,Google,Facebook'},
+  {name:'Longest Repeating Character Replacement',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/longest-repeating-character-replacement/',company:'Google'},
+  {name:'Reverse Words in a String',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/reverse-words-in-a-string/',company:'Microsoft,Apple'},
+  {name:'String to Integer (atoi)',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/string-to-integer-atoi/',company:'Amazon,Microsoft'},
+  {name:'Zigzag Conversion',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/zigzag-conversion/',company:'Bloomberg'},
+  {name:'Count and Say',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/count-and-say/',company:'Google,Facebook'},
+  {name:'Roman to Integer',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/roman-to-integer/',company:'Amazon,Microsoft,Bloomberg'},
+  {name:'Longest Common Prefix',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/longest-common-prefix/',company:'Google'},
+  {name:'Find All Anagrams in a String',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/find-all-anagrams-in-a-string/',company:'Amazon,Spotify'},
+
+  // ── LINKED LIST (12) ──
+  {name:'Reverse Linked List',diff:'Easy',topic:'Linked List',url:'https://leetcode.com/problems/reverse-linked-list/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Merge Two Sorted Lists',diff:'Easy',topic:'Linked List',url:'https://leetcode.com/problems/merge-two-sorted-lists/',company:'Amazon,Google,Microsoft'},
+  {name:'Reorder List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/reorder-list/',company:'Amazon,Facebook'},
+  {name:'Remove Nth Node From End of List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/remove-nth-node-from-end-of-list/',company:'Amazon,Google,Microsoft'},
+  {name:'Copy List with Random Pointer',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/copy-list-with-random-pointer/',company:'Amazon,Microsoft,Google'},
+  {name:'Linked List Cycle',diff:'Easy',topic:'Linked List',url:'https://leetcode.com/problems/linked-list-cycle/',company:'Amazon,Google,Microsoft'},
+  {name:'Find the Duplicate Number',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/find-the-duplicate-number/',company:'Amazon,Google'},
+  {name:'LRU Cache',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/lru-cache/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Merge K Sorted Lists',diff:'Hard',topic:'Linked List',url:'https://leetcode.com/problems/merge-k-sorted-lists/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Reverse Nodes in k-Group',diff:'Hard',topic:'Linked List',url:'https://leetcode.com/problems/reverse-nodes-in-k-group/',company:'Amazon,Google,Microsoft'},
+  {name:'Add Two Numbers',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/add-two-numbers/',company:'Amazon,Microsoft,Google'},
+  {name:'Intersection of Two Linked Lists',diff:'Easy',topic:'Linked List',url:'https://leetcode.com/problems/intersection-of-two-linked-lists/',company:'Amazon,Microsoft'},
+
+  // ── TREES (18) ──
+  {name:'Maximum Depth of Binary Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/maximum-depth-of-binary-tree/',company:'Amazon,Google,Facebook'},
+  {name:'Same Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/same-tree/',company:'Amazon,Google'},
+  {name:'Invert Binary Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/invert-binary-tree/',company:'Google,Apple,Facebook'},
+  {name:'Binary Tree Level Order Traversal',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/binary-tree-level-order-traversal/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'Subtree of Another Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/subtree-of-another-tree/',company:'Amazon,Microsoft'},
+  {name:'Construct Binary Tree from Preorder and Inorder',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/',company:'Amazon,Google,Microsoft'},
+  {name:'Validate Binary Search Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/validate-binary-search-tree/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'Kth Smallest Element in a BST',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/kth-smallest-element-in-a-bst/',company:'Amazon,Google,Microsoft'},
+  {name:'Lowest Common Ancestor of BST',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/',company:'Amazon,Facebook,Microsoft'},
+  {name:'Binary Tree Right Side View',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/binary-tree-right-side-view/',company:'Amazon,Facebook,Bloomberg'},
+  {name:'Count Good Nodes in Binary Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/count-good-nodes-in-binary-tree/',company:'Google'},
+  {name:'Binary Tree Maximum Path Sum',diff:'Hard',topic:'Trees',url:'https://leetcode.com/problems/binary-tree-maximum-path-sum/',company:'Amazon,Google,Microsoft'},
+  {name:'Serialize and Deserialize Binary Tree',diff:'Hard',topic:'Trees',url:'https://leetcode.com/problems/serialize-and-deserialize-binary-tree/',company:'Google,Facebook,Amazon'},
+  {name:'Diameter of Binary Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/diameter-of-binary-tree/',company:'Google,Facebook'},
+  {name:'Balanced Binary Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/balanced-binary-tree/',company:'Amazon,Microsoft'},
+  {name:'Path Sum',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/path-sum/',company:'Amazon,Microsoft'},
+  {name:'Sum Root to Leaf Numbers',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/sum-root-to-leaf-numbers/',company:'Google,Facebook'},
+  {name:'Flatten Binary Tree to Linked List',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/flatten-binary-tree-to-linked-list/',company:'Amazon,Microsoft'},
+
+  // ── GRAPHS (15) ──
+  {name:'Number of Islands',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/number-of-islands/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'Clone Graph',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/clone-graph/',company:'Amazon,Google,Facebook'},
+  {name:'Pacific Atlantic Water Flow',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/pacific-atlantic-water-flow/',company:'Google'},
+  {name:'Course Schedule',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/course-schedule/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Course Schedule II',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/course-schedule-ii/',company:'Amazon,Google,Facebook'},
+  {name:'Number of Connected Components',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/',company:'LinkedIn,Google'},
+  {name:'Graph Valid Tree',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/graph-valid-tree/',company:'Google,LinkedIn'},
+  {name:'Alien Dictionary',diff:'Hard',topic:'Graphs',url:'https://leetcode.com/problems/alien-dictionary/',company:'Google,Facebook,Airbnb'},
+  {name:'Word Ladder',diff:'Hard',topic:'Graphs',url:'https://leetcode.com/problems/word-ladder/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Rotting Oranges',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/rotting-oranges/',company:'Amazon,Google'},
+  {name:'01 Matrix',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/01-matrix/',company:'Google,Facebook'},
+  {name:'Surrounded Regions',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/surrounded-regions/',company:'Google'},
+  {name:'Network Delay Time',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/network-delay-time/',company:'Google,Amazon'},
+  {name:'Minimum Height Trees',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/minimum-height-trees/',company:'Google'},
+  {name:'Redundant Connection',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/redundant-connection/',company:'Google'},
+
+  // ── DYNAMIC PROGRAMMING (20) ──
+  {name:'Climbing Stairs',diff:'Easy',topic:'Dynamic Programming',url:'https://leetcode.com/problems/climbing-stairs/',company:'Amazon,Google,Microsoft'},
+  {name:'House Robber',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/house-robber/',company:'Amazon,Google,LinkedIn'},
+  {name:'House Robber II',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/house-robber-ii/',company:'Amazon,Google'},
+  {name:'Coin Change',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/coin-change/',company:'Amazon,Google,Microsoft'},
+  {name:'Longest Increasing Subsequence',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/longest-increasing-subsequence/',company:'Amazon,Google,Microsoft'},
+  {name:'Longest Common Subsequence',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/longest-common-subsequence/',company:'Amazon,Google,Microsoft'},
+  {name:'Word Break',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/word-break/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Combination Sum IV',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/combination-sum-iv/',company:'Amazon,Google'},
+  {name:'Decode Ways',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/decode-ways/',company:'Amazon,Facebook,Microsoft'},
+  {name:'Unique Paths',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/unique-paths/',company:'Amazon,Google,Microsoft'},
+  {name:'Jump Game II',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/jump-game-ii/',company:'Amazon,Google'},
+  {name:'Palindrome Partitioning',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/palindrome-partitioning/',company:'Google,Facebook'},
+  {name:'Target Sum',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/target-sum/',company:'Facebook,Amazon'},
+  {name:'Interleaving String',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/interleaving-string/',company:'Google,Amazon'},
+  {name:'Edit Distance',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/edit-distance/',company:'Amazon,Google,Microsoft'},
+  {name:'Burst Balloons',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/burst-balloons/',company:'Google'},
+  {name:'Egg Drop With 2 Eggs and N Floors',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/egg-drop-with-2-eggs-and-n-floors/',company:'Google,Microsoft'},
+  {name:'Partition Equal Subset Sum',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/partition-equal-subset-sum/',company:'Amazon,Google'},
+  {name:'Maximum Profit in Job Scheduling',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/maximum-profit-in-job-scheduling/',company:'Google,Amazon'},
+  {name:'Regular Expression Matching',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/regular-expression-matching/',company:'Google,Facebook,Amazon'},
+
+  // ── BACKTRACKING (10) ──
+  {name:'Combination Sum',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/combination-sum/',company:'Amazon,Google,Microsoft'},
+  {name:'Combination Sum II',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/combination-sum-ii/',company:'Amazon,Google'},
+  {name:'Permutations',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/permutations/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'Permutations II',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/permutations-ii/',company:'Microsoft,LinkedIn'},
+  {name:'Subsets',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/subsets/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Subsets II',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/subsets-ii/',company:'Amazon,Microsoft'},
+  {name:'Word Search',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/word-search/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'N-Queens',diff:'Hard',topic:'Backtracking',url:'https://leetcode.com/problems/n-queens/',company:'Google,Microsoft,Amazon'},
+  {name:'Sudoku Solver',diff:'Hard',topic:'Backtracking',url:'https://leetcode.com/problems/sudoku-solver/',company:'Snapchat,Uber'},
+  {name:'Letter Combinations of a Phone Number',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/letter-combinations-of-a-phone-number/',company:'Amazon,Google,Facebook,Microsoft'},
+
+  // ── BINARY SEARCH (10) ──
+  {name:'Binary Search',diff:'Easy',topic:'Binary Search',url:'https://leetcode.com/problems/binary-search/',company:'Google,Amazon'},
+  {name:'Search a 2D Matrix',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/search-a-2d-matrix/',company:'Amazon,Google,Microsoft'},
+  {name:'Koko Eating Bananas',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/koko-eating-bananas/',company:'Amazon,Google'},
+  {name:'Search in Rotated Sorted Array II',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/search-in-rotated-sorted-array-ii/',company:'Microsoft,Google'},
+  {name:'Find Minimum in Rotated Sorted Array II',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/',company:'Microsoft'},
+  {name:'Median of Two Sorted Arrays',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/median-of-two-sorted-arrays/',company:'Amazon,Google,Microsoft,Apple'},
+  {name:'Split Array Largest Sum',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/split-array-largest-sum/',company:'Facebook,Baidu'},
+  {name:'Find Peak Element',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/find-peak-element/',company:'Google,Microsoft'},
+  {name:'First Bad Version',diff:'Easy',topic:'Binary Search',url:'https://leetcode.com/problems/first-bad-version/',company:'Facebook,Google'},
+  {name:'Capacity To Ship Packages Within D Days',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/',company:'Amazon'},
+
+  // ── STACK/QUEUE (10) ──
+  {name:'Valid Parentheses',diff:'Easy',topic:'Stack/Queue',url:'https://leetcode.com/problems/valid-parentheses/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'Min Stack',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/min-stack/',company:'Amazon,Google,Bloomberg'},
+  {name:'Evaluate Reverse Polish Notation',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/evaluate-reverse-polish-notation/',company:'LinkedIn,Amazon'},
+  {name:'Generate Parentheses',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/generate-parentheses/',company:'Amazon,Google,Microsoft,Facebook'},
+  {name:'Daily Temperatures',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/daily-temperatures/',company:'Amazon,Google'},
+  {name:'Car Fleet',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/car-fleet/',company:'Google'},
+  {name:'Largest Rectangle in Histogram',diff:'Hard',topic:'Stack/Queue',url:'https://leetcode.com/problems/largest-rectangle-in-histogram/',company:'Amazon,Google,Microsoft'},
+  {name:'Sliding Window Maximum',diff:'Hard',topic:'Stack/Queue',url:'https://leetcode.com/problems/sliding-window-maximum/',company:'Amazon,Google,Lyft'},
+  {name:'Basic Calculator II',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/basic-calculator-ii/',company:'Amazon,Facebook'},
+  {name:'Next Greater Element I',diff:'Easy',topic:'Stack/Queue',url:'https://leetcode.com/problems/next-greater-element-i/',company:'Google'},
+
+  // ── HEAP (8) ──
+  {name:'Kth Largest Element in an Array',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/kth-largest-element-in-an-array/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Top K Frequent Elements',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/top-k-frequent-elements/',company:'Amazon,Google,Facebook'},
+  {name:'Find Median from Data Stream',diff:'Hard',topic:'Heap',url:'https://leetcode.com/problems/find-median-from-data-stream/',company:'Amazon,Google,Microsoft'},
+  {name:'Merge K Sorted Lists',diff:'Hard',topic:'Heap',url:'https://leetcode.com/problems/merge-k-sorted-lists/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Task Scheduler',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/task-scheduler/',company:'Facebook,Amazon'},
+  {name:'Design Twitter',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/design-twitter/',company:'Twitter'},
+  {name:'K Closest Points to Origin',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/k-closest-points-to-origin/',company:'Amazon,Google,Facebook'},
+  {name:'Last Stone Weight',diff:'Easy',topic:'Heap',url:'https://leetcode.com/problems/last-stone-weight/',company:'Google'},
+
+  // ── TRIE (5) ──
+  {name:'Implement Trie (Prefix Tree)',diff:'Medium',topic:'Trie',url:'https://leetcode.com/problems/implement-trie-prefix-tree/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Design Add and Search Words Data Structure',diff:'Medium',topic:'Trie',url:'https://leetcode.com/problems/design-add-and-search-words-data-structure/',company:'Facebook,Google'},
+  {name:'Word Search II',diff:'Hard',topic:'Trie',url:'https://leetcode.com/problems/word-search-ii/',company:'Amazon,Google,Microsoft'},
+  {name:'Replace Words',diff:'Medium',topic:'Trie',url:'https://leetcode.com/problems/replace-words/',company:'Uber'},
+  {name:'Map Sum Pairs',diff:'Medium',topic:'Trie',url:'https://leetcode.com/problems/map-sum-pairs/',company:'Bloomberg'},
+
+  // ── TWO POINTERS (8) ──
+  {name:'Trapping Rain Water',diff:'Hard',topic:'Two Pointers',url:'https://leetcode.com/problems/trapping-rain-water/',company:'Amazon,Google,Facebook'},
+  {name:'Two Sum II - Input Array Is Sorted',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/',company:'Amazon'},
+  {name:'4Sum',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/4sum/',company:'Amazon,Google'},
+  {name:'Remove Duplicates from Sorted Array',diff:'Easy',topic:'Two Pointers',url:'https://leetcode.com/problems/remove-duplicates-from-sorted-array/',company:'Microsoft,Facebook'},
+  {name:'Remove Element',diff:'Easy',topic:'Two Pointers',url:'https://leetcode.com/problems/remove-element/',company:'Google'},
+  {name:'Sort Colors',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/sort-colors/',company:'Amazon,Microsoft,Uber'},
+  {name:'Squares of a Sorted Array',diff:'Easy',topic:'Two Pointers',url:'https://leetcode.com/problems/squares-of-a-sorted-array/',company:'Amazon,Google'},
+  {name:'Partition Labels',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/partition-labels/',company:'Amazon,Google'},
+
+  // ── SLIDING WINDOW (8) ──
+  {name:'Longest Substring Without Repeating Characters',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/longest-substring-without-repeating-characters/',company:'Amazon,Google,Facebook,Microsoft'},
+  {name:'Minimum Window Substring',diff:'Hard',topic:'Sliding Window',url:'https://leetcode.com/problems/minimum-window-substring/',company:'Amazon,Google,Facebook'},
+  {name:'Longest Repeating Character Replacement',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/longest-repeating-character-replacement/',company:'Google'},
+  {name:'Permutation in String',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/permutation-in-string/',company:'Amazon,Microsoft'},
+  {name:'Maximum Average Subarray I',diff:'Easy',topic:'Sliding Window',url:'https://leetcode.com/problems/maximum-average-subarray-i/',company:'Google'},
+  {name:'Fruit Into Baskets',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/fruit-into-baskets/',company:'Google'},
+  {name:'Subarray Sum Equals K',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/subarray-sum-equals-k/',company:'Facebook,Google,Amazon'},
+  {name:'Minimum Size Subarray Sum',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/minimum-size-subarray-sum/',company:'Facebook,Google'},
+
+  // ── GREEDY (8) ──
+  {name:'Jump Game',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/jump-game/',company:'Amazon,Google,Microsoft'},
+  {name:'Jump Game II',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/jump-game-ii/',company:'Amazon,Google'},
+  {name:'Gas Station',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/gas-station/',company:'Amazon,Google'},
+  {name:'Hand of Straights',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/hand-of-straights/',company:'Google'},
+  {name:'Merge Triplets to Form Target Triplet',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/merge-triplets-to-form-target-triplet/',company:'Google'},
+  {name:'Valid Parenthesis String',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/valid-parenthesis-string/',company:'Google,Amazon'},
+  {name:'Assign Cookies',diff:'Easy',topic:'Greedy',url:'https://leetcode.com/problems/assign-cookies/',company:'Google'},
+  {name:'Meeting Rooms II',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/meeting-rooms-ii/',company:'Amazon,Google,Facebook,Microsoft'},
+
+  // ── SORTING (5) ──
+  {name:'Sort an Array',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/sort-an-array/',company:'Amazon'},
+  {name:'Merge Sort',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/sort-list/',company:'Amazon,Google,Microsoft'},
+  {name:'Kth Largest Element in an Array',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/kth-largest-element-in-an-array/',company:'Amazon,Google,Facebook'},
+  {name:'Count of Smaller Numbers After Self',diff:'Hard',topic:'Sorting',url:'https://leetcode.com/problems/count-of-smaller-numbers-after-self/',company:'Google'},
+  {name:'Wiggle Sort II',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/wiggle-sort-ii/',company:'Google'},
+
+  // ── MATH (8) ──
+  {name:'Palindrome Number',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/palindrome-number/',company:'Amazon,Google'},
+  {name:'Reverse Integer',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/reverse-integer/',company:'Amazon,Bloomberg'},
+  {name:'Power of Two',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/power-of-two/',company:'Google'},
+  {name:'Sqrt(x)',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/sqrtx/',company:'Amazon,Microsoft'},
+  {name:'Excel Sheet Column Number',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/excel-sheet-column-number/',company:'Microsoft,Amazon'},
+  {name:'Happy Number',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/happy-number/',company:'Amazon,Microsoft'},
+  {name:'Count Primes',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/count-primes/',company:'Amazon,Microsoft'},
+  {name:'Pow(x, n)',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/powx-n/',company:'Google,Facebook,Bloomberg'},
+
+  // ── BIT MANIPULATION (7) ──
+  {name:'Number of 1 Bits',diff:'Easy',topic:'Bit Manipulation',url:'https://leetcode.com/problems/number-of-1-bits/',company:'Microsoft,Apple'},
+  {name:'Counting Bits',diff:'Easy',topic:'Bit Manipulation',url:'https://leetcode.com/problems/counting-bits/',company:'Google,Facebook'},
+  {name:'Reverse Bits',diff:'Easy',topic:'Bit Manipulation',url:'https://leetcode.com/problems/reverse-bits/',company:'Apple'},
+  {name:'Missing Number',diff:'Easy',topic:'Bit Manipulation',url:'https://leetcode.com/problems/missing-number/',company:'Microsoft,Google'},
+  {name:'Sum of Two Integers',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/sum-of-two-integers/',company:'Amazon,Google,Facebook'},
+  {name:'Single Number',diff:'Easy',topic:'Bit Manipulation',url:'https://leetcode.com/problems/single-number/',company:'Amazon,Google,Microsoft'},
+  {name:'Bitwise AND of Numbers Range',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/bitwise-and-of-numbers-range/',company:'Google'},
+
+  // ── RECURSION (6) ──
+  {name:'Factorial',diff:'Easy',topic:'Recursion',url:'https://leetcode.com/problems/factorial-trailing-zeroes/',company:'Amazon'},
+  {name:'Fibonacci Number',diff:'Easy',topic:'Recursion',url:'https://leetcode.com/problems/fibonacci-number/',company:'Google,Microsoft'},
+  {name:'Power of Three',diff:'Easy',topic:'Recursion',url:'https://leetcode.com/problems/power-of-three/',company:'Google'},
+  {name:'Flatten Nested List Iterator',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems/flatten-nested-list-iterator/',company:'Google,Facebook,Airbnb'},
+  {name:'K-th Symbol in Grammar',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems/k-th-symbol-in-grammar/',company:'Google'},
+  {name:'Tower of Hanoi',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems//', company:'Amazon,Microsoft'},
+
+  // ══════════════════════════════════════════════
+  // BATCH 2 — 200 MORE PROBLEMS
+  // ══════════════════════════════════════════════
+
+  // ── ARRAYS ADVANCED (18) ──
+  {name:'4Sum',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/4sum/',company:'Amazon,Google'},
+  {name:'Subarray Product Less Than K',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/subarray-product-less-than-k/',company:'Google'},
+  {name:'Find All Numbers Disappeared in Array',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/',company:'Google,Amazon'},
+  {name:'Longest Consecutive Sequence',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/longest-consecutive-sequence/',company:'Google,Facebook,Amazon'},
+  {name:'Game of Life',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/game-of-life/',company:'Dropbox,Google'},
+  {name:'First Missing Positive',diff:'Hard',topic:'Arrays',url:'https://leetcode.com/problems/first-missing-positive/',company:'Amazon,Google,Microsoft'},
+  {name:'Candy',diff:'Hard',topic:'Arrays',url:'https://leetcode.com/problems/candy/',company:'Amazon,Google'},
+  {name:'Rotate Image',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/rotate-image/',company:'Amazon,Microsoft,Apple'},
+  {name:'Diagonal Traverse',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/diagonal-traverse/',company:'Amazon,Microsoft'},
+  {name:'Pascal\'s Triangle',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/pascals-triangle/',company:'Apple,Amazon'},
+  {name:'Pascal\'s Triangle II',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/pascals-triangle-ii/',company:'Amazon'},
+  {name:'Plus One',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/plus-one/',company:'Google,Amazon'},
+  {name:'Summary Ranges',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/summary-ranges/',company:'Google'},
+  {name:'Max Consecutive Ones III',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/max-consecutive-ones-iii/',company:'Google,Facebook'},
+  {name:'Minimum Jumps to Reach Home',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/minimum-jumps-to-reach-home/',company:'Google'},
+  {name:'Count Number of Nice Subarrays',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/count-number-of-nice-subarrays/',company:'Google'},
+  {name:'Shortest Unsorted Continuous Subarray',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/shortest-unsorted-continuous-subarray/',company:'Amazon,Google'},
+  {name:'Number of Subarrays with Bounded Maximum',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/',company:'Google'},
+
+  // ── STRINGS ADVANCED (15) ──
+  {name:'Decode String',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/decode-string/',company:'Google,Amazon,Facebook'},
+  {name:'Longest Palindrome',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/longest-palindrome/',company:'Amazon,Google'},
+  {name:'Sentence Similarity',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/sentence-similarity/',company:'Google'},
+  {name:'Isomorphic Strings',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/isomorphic-strings/',company:'LinkedIn,Google'},
+  {name:'Word Pattern',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/word-pattern/',company:'Dropbox,Google'},
+  {name:'Scramble String',diff:'Hard',topic:'Strings',url:'https://leetcode.com/problems/scramble-string/',company:'Google'},
+  {name:'Text Justification',diff:'Hard',topic:'Strings',url:'https://leetcode.com/problems/text-justification/',company:'Airbnb,LinkedIn,Uber'},
+  {name:'Wildcard Matching',diff:'Hard',topic:'Strings',url:'https://leetcode.com/problems/wildcard-matching/',company:'Google,Facebook'},
+  {name:'Integer to Roman',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/integer-to-roman/',company:'Amazon,Microsoft,Bloomberg'},
+  {name:'Multiply Strings',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/multiply-strings/',company:'Facebook,Twitter'},
+  {name:'Implement strStr()',diff:'Easy',topic:'Strings',url:'https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/',company:'Apple,Microsoft'},
+  {name:'Compare Version Numbers',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/compare-version-numbers/',company:'Intuit,Apple'},
+  {name:'Repeated DNA Sequences',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/repeated-dna-sequences/',company:'LinkedIn'},
+  {name:'Minimum Number of Steps to Make Two Strings Anagram',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram/',company:'Google'},
+  {name:'Largest Number',diff:'Medium',topic:'Strings',url:'https://leetcode.com/problems/largest-number/',company:'Amazon,Zillow'},
+
+  // ── LINKED LIST ADVANCED (10) ──
+  {name:'Swap Nodes in Pairs',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/swap-nodes-in-pairs/',company:'Microsoft,Bloomberg'},
+  {name:'Odd Even Linked List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/odd-even-linked-list/',company:'Amazon,Samsung'},
+  {name:'Rotate List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/rotate-list/',company:'Amazon'},
+  {name:'Partition List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/partition-list/',company:'Amazon'},
+  {name:'Remove Duplicates from Sorted List II',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/',company:'Google,Microsoft'},
+  {name:'Palindrome Linked List',diff:'Easy',topic:'Linked List',url:'https://leetcode.com/problems/palindrome-linked-list/',company:'Amazon,Facebook,Apple'},
+  {name:'Convert Binary Number in a Linked List to Integer',diff:'Easy',topic:'Linked List',url:'https://leetcode.com/problems/convert-binary-number-in-a-linked-list-to-integer/',company:'Google'},
+  {name:'Split Linked List in Parts',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/split-linked-list-in-parts/',company:'Amazon'},
+  {name:'Design Linked List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/design-linked-list/',company:'Amazon,Microsoft'},
+  {name:'Next Greater Node in Linked List',diff:'Medium',topic:'Linked List',url:'https://leetcode.com/problems/next-greater-node-in-linked-list/',company:'Amazon'},
+
+  // ── TREES ADVANCED (16) ──
+  {name:'Path Sum II',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/path-sum-ii/',company:'Amazon,Microsoft'},
+  {name:'Path Sum III',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/path-sum-iii/',company:'Amazon,Google'},
+  {name:'Binary Tree Zigzag Level Order Traversal',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/',company:'Amazon,Google,Microsoft'},
+  {name:'Populating Next Right Pointers',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/populating-next-right-pointers-in-each-node/',company:'Microsoft,Facebook'},
+  {name:'Recover Binary Search Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/recover-binary-search-tree/',company:'Amazon,Microsoft'},
+  {name:'Unique Binary Search Trees',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/unique-binary-search-trees/',company:'Amazon,Google'},
+  {name:'Unique Binary Search Trees II',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/unique-binary-search-trees-ii/',company:'Amazon,Google'},
+  {name:'Symmetric Tree',diff:'Easy',topic:'Trees',url:'https://leetcode.com/problems/symmetric-tree/',company:'Amazon,Microsoft,Bloomberg'},
+  {name:'House Robber III',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/house-robber-iii/',company:'Google'},
+  {name:'Delete Node in a BST',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/delete-node-in-a-bst/',company:'Uber,Google'},
+  {name:'Trim a Binary Search Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/trim-a-binary-search-tree/',company:'Google'},
+  {name:'Convert BST to Greater Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/convert-bst-to-greater-tree/',company:'Amazon'},
+  {name:'Check Completeness of a Binary Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/check-completeness-of-a-binary-tree/',company:'Facebook'},
+  {name:'Maximum Width of Binary Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/maximum-width-of-binary-tree/',company:'Amazon,Facebook'},
+  {name:'All Nodes Distance K in Binary Tree',diff:'Medium',topic:'Trees',url:'https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/',company:'Google,Facebook'},
+  {name:'Vertical Order Traversal of a Binary Tree',diff:'Hard',topic:'Trees',url:'https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/',company:'Facebook,Amazon'},
+
+  // ── GRAPHS ADVANCED (14) ──
+  {name:'Keys and Rooms',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/keys-and-rooms/',company:'Google'},
+  {name:'Is Graph Bipartite?',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/is-graph-bipartite/',company:'Google,Facebook'},
+  {name:'Find Eventual Safe States',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/find-eventual-safe-states/',company:'Google'},
+  {name:'Reconstruct Itinerary',diff:'Hard',topic:'Graphs',url:'https://leetcode.com/problems/reconstruct-itinerary/',company:'Google'},
+  {name:'Critical Connections in a Network',diff:'Hard',topic:'Graphs',url:'https://leetcode.com/problems/critical-connections-in-a-network/',company:'Amazon'},
+  {name:'Accounts Merge',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/accounts-merge/',company:'Google,Facebook'},
+  {name:'Number of Provinces',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/number-of-provinces/',company:'Google,Amazon'},
+  {name:'Shortest Path in Binary Matrix',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/shortest-path-in-binary-matrix/',company:'Google,Amazon'},
+  {name:'Max Area of Island',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/max-area-of-island/',company:'Google,Facebook,Amazon'},
+  {name:'Flood Fill',diff:'Easy',topic:'Graphs',url:'https://leetcode.com/problems/flood-fill/',company:'Google,Facebook'},
+  {name:'Walls and Gates',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/walls-and-gates/',company:'Facebook,Google'},
+  {name:'Longest Path in DAG',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/longest-path-with-different-adjacent-characters/',company:'Google'},
+  {name:'Minimum Spanning Tree (Kruskal)',diff:'Hard',topic:'Graphs',url:'https://leetcode.com/problems/min-cost-to-connect-all-points/',company:'Amazon,Google'},
+  {name:'Dijkstra Shortest Path',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/cheapest-flights-within-k-stops/',company:'Google,Amazon'},
+
+  // ── DYNAMIC PROGRAMMING ADVANCED (20) ──
+  {name:'Longest Bitonic Subsequence',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems//',company:'Amazon,Google'},
+  {name:'0/1 Knapsack Problem',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/partition-equal-subset-sum/',company:'Amazon,Google'},
+  {name:'Minimum Path Sum',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/minimum-path-sum/',company:'Amazon,Google,Microsoft'},
+  {name:'Triangle',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/triangle/',company:'Amazon'},
+  {name:'Maximal Square',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/maximal-square/',company:'Facebook,Airbnb,Amazon'},
+  {name:'Maximal Rectangle',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/maximal-rectangle/',company:'Amazon,Microsoft'},
+  {name:'Distinct Subsequences',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/distinct-subsequences/',company:'Google'},
+  {name:'Best Time to Buy Sell Stock III',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/',company:'Amazon,Google'},
+  {name:'Best Time to Buy Sell Stock IV',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/',company:'Amazon,Google'},
+  {name:'Best Time to Buy Sell with Cooldown',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/',company:'Amazon'},
+  {name:'Counting Bits DP',diff:'Easy',topic:'Dynamic Programming',url:'https://leetcode.com/problems/counting-bits/',company:'Google,Facebook'},
+  {name:'Russian Doll Envelopes',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/russian-doll-envelopes/',company:'Google'},
+  {name:'Stone Game',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/stone-game/',company:'Google'},
+  {name:'Predict the Winner',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/predict-the-winner/',company:'Google,Amazon'},
+  {name:'Dungeon Game',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/dungeon-game/',company:'Amazon'},
+  {name:'Minimum Cost for Tickets',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/minimum-cost-for-tickets/',company:'Google,Facebook'},
+  {name:'Arithmetic Slices',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/arithmetic-slices/',company:'Microsoft'},
+  {name:'Wiggle Subsequence',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/wiggle-subsequence/',company:'Google'},
+  {name:'Dice Roll Simulation',diff:'Hard',topic:'Dynamic Programming',url:'https://leetcode.com/problems/dice-roll-simulation/',company:'Google'},
+  {name:'Number of Longest Increasing Subsequence',diff:'Medium',topic:'Dynamic Programming',url:'https://leetcode.com/problems/number-of-longest-increasing-subsequence/',company:'Google,Amazon'},
+
+  // ── BACKTRACKING ADVANCED (8) ──
+  {name:'Palindrome Partitioning II',diff:'Hard',topic:'Backtracking',url:'https://leetcode.com/problems/palindrome-partitioning-ii/',company:'Google'},
+  {name:'Expression Add Operators',diff:'Hard',topic:'Backtracking',url:'https://leetcode.com/problems/expression-add-operators/',company:'Google,Facebook'},
+  {name:'Remove Invalid Parentheses',diff:'Hard',topic:'Backtracking',url:'https://leetcode.com/problems/remove-invalid-parentheses/',company:'Facebook'},
+  {name:'Beautiful Arrangement',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/beautiful-arrangement/',company:'Google'},
+  {name:'Factor Combinations',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/factor-combinations/',company:'LinkedIn,Zenefits'},
+  {name:'Combination Sum III',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/combination-sum-iii/',company:'Amazon,Google'},
+  {name:'Gray Code',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/gray-code/',company:'Amazon'},
+  {name:'Restore IP Addresses',diff:'Medium',topic:'Backtracking',url:'https://leetcode.com/problems/restore-ip-addresses/',company:'Amazon,Google'},
+
+  // ── BINARY SEARCH ADVANCED (8) ──
+  {name:'Search a 2D Matrix II',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/search-a-2d-matrix-ii/',company:'Amazon,Google,Microsoft'},
+  {name:'H-Index II',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/h-index-ii/',company:'Facebook,Google'},
+  {name:'Find Right Interval',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/find-right-interval/',company:'Google'},
+  {name:'Count of Range Sum',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/count-of-range-sum/',company:'Google'},
+  {name:'Cutting Ribbons',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/cutting-ribbons/',company:'Amazon,Google'},
+  {name:'Aggressive Cows',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems//',company:'Amazon,Google'},
+  {name:'Minimum Number of Days to Make m Bouquets',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/',company:'Amazon,Google'},
+  {name:'Find K-th Smallest Pair Distance',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/find-k-th-smallest-pair-distance/',company:'Google'},
+
+  // ── STACK/QUEUE ADVANCED (8) ──
+  {name:'Decode String',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/decode-string/',company:'Google,Amazon,Facebook'},
+  {name:'Asteroid Collision',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/asteroid-collision/',company:'Amazon,Google'},
+  {name:'Remove K Digits',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/remove-k-digits/',company:'Google'},
+  {name:'132 Pattern',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/132-pattern/',company:'Google,Amazon'},
+  {name:'Online Stock Span',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/online-stock-span/',company:'Amazon,Microsoft'},
+  {name:'Maximal Rectangle using Stack',diff:'Hard',topic:'Stack/Queue',url:'https://leetcode.com/problems/maximal-rectangle/',company:'Amazon,Microsoft,Google'},
+  {name:'Simplify Path',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/simplify-path/',company:'Facebook,Airbnb'},
+  {name:'Design Circular Queue',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/design-circular-queue/',company:'Amazon,Microsoft'},
+
+  // ── HEAP ADVANCED (7) ──
+  {name:'Reorganize String',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/reorganize-string/',company:'Google,Facebook'},
+  {name:'Smallest Range Covering Elements from K Lists',diff:'Hard',topic:'Heap',url:'https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/',company:'Google'},
+  {name:'IPO',diff:'Hard',topic:'Heap',url:'https://leetcode.com/problems/ipo/',company:'LinkedIn,Google'},
+  {name:'Find K Pairs with Smallest Sums',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/find-k-pairs-with-smallest-sums/',company:'Google,Uber'},
+  {name:'Kth Smallest Element in a Sorted Matrix',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/',company:'Google,Twitter'},
+  {name:'Top K Frequent Words',diff:'Medium',topic:'Heap',url:'https://leetcode.com/problems/top-k-frequent-words/',company:'Amazon,Bloomberg'},
+  {name:'Minimum Cost to Hire K Workers',diff:'Hard',topic:'Heap',url:'https://leetcode.com/problems/minimum-cost-to-hire-k-workers/',company:'Google'},
+
+  // ── TRIE ADVANCED (5) ──
+  {name:'Palindrome Pairs',diff:'Hard',topic:'Trie',url:'https://leetcode.com/problems/palindrome-pairs/',company:'Airbnb,Google'},
+  {name:'Concatenated Words',diff:'Hard',topic:'Trie',url:'https://leetcode.com/problems/concatenated-words/',company:'Google'},
+  {name:'Word Squares',diff:'Hard',topic:'Trie',url:'https://leetcode.com/problems/word-squares/',company:'Google'},
+  {name:'Maximum XOR of Two Numbers in an Array',diff:'Medium',topic:'Trie',url:'https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/',company:'Google,Facebook'},
+  {name:'Short Encoding of Words',diff:'Medium',topic:'Trie',url:'https://leetcode.com/problems/short-encoding-of-words/',company:'Google'},
+
+  // ── TWO POINTERS ADVANCED (7) ──
+  {name:'Minimum Operations to Reduce X to Zero',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/',company:'Google'},
+  {name:'Boats to Save People',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/boats-to-save-people/',company:'Amazon,Google'},
+  {name:'Shortest Word Distance',diff:'Easy',topic:'Two Pointers',url:'https://leetcode.com/problems/shortest-word-distance/',company:'LinkedIn,Google'},
+  {name:'3Sum Closest',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/3sum-closest/',company:'Amazon,Bloomberg'},
+  {name:'3Sum Smaller',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/3sum-smaller/',company:'Google'},
+  {name:'Interval List Intersections',diff:'Medium',topic:'Two Pointers',url:'https://leetcode.com/problems/interval-list-intersections/',company:'Facebook,Amazon'},
+  {name:'Subarrays with K Different Integers',diff:'Hard',topic:'Two Pointers',url:'https://leetcode.com/problems/subarrays-with-k-different-integers/',company:'Google'},
+
+  // ── SLIDING WINDOW ADVANCED (6) ──
+  {name:'Maximum Points You Can Obtain from Cards',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/',company:'Google'},
+  {name:'Longest Subarray of 1s After Deleting One Element',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/longest-subarray-of-1s-after-deleting-one-element/',company:'Google'},
+  {name:'Grumpy Bookstore Owner',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/grumpy-bookstore-owner/',company:'Google'},
+  {name:'Number of Substrings Containing All Three Characters',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/',company:'Google'},
+  {name:'Count Occurrences of Anagrams',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems//',company:'Google,Amazon'},
+  {name:'Longest Nice Subarray',diff:'Medium',topic:'Sliding Window',url:'https://leetcode.com/problems/longest-nice-subarray/',company:'Google'},
+
+  // ── GREEDY ADVANCED (7) ──
+  {name:'Minimum Number of Arrows to Burst Balloons',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/',company:'Microsoft,Amazon'},
+  {name:'Queue Reconstruction by Height',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/queue-reconstruction-by-height/',company:'Google'},
+  {name:'Advantage Shuffle',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/advantage-shuffle/',company:'Google'},
+  {name:'Largest Perimeter Triangle',diff:'Easy',topic:'Greedy',url:'https://leetcode.com/problems/largest-perimeter-triangle/',company:'Google'},
+  {name:'Two City Scheduling',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/two-city-scheduling/',company:'Amazon'},
+  {name:'Minimum Domino Rotations For Equal Row',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/',company:'Google'},
+  {name:'Maximum Swap',diff:'Medium',topic:'Greedy',url:'https://leetcode.com/problems/maximum-swap/',company:'Facebook'},
+
+  // ── SORTING ADVANCED (6) ──
+  {name:'Insertion Sort List',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/insertion-sort-list/',company:'Google'},
+  {name:'Maximum Gap',diff:'Hard',topic:'Sorting',url:'https://leetcode.com/problems/maximum-gap/',company:'Amazon'},
+  {name:'Relative Sort Array',diff:'Easy',topic:'Sorting',url:'https://leetcode.com/problems/relative-sort-array/',company:'Google'},
+  {name:'Rank Transform of an Array',diff:'Easy',topic:'Sorting',url:'https://leetcode.com/problems/rank-transform-of-an-array/',company:'Google'},
+  {name:'Sort Characters By Frequency',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/sort-characters-by-frequency/',company:'Amazon,Google'},
+  {name:'Custom Sort String',diff:'Medium',topic:'Sorting',url:'https://leetcode.com/problems/custom-sort-string/',company:'Facebook'},
+
+  // ── MATH ADVANCED (8) ──
+  {name:'Ugly Number',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/ugly-number/',company:'Google,Amazon'},
+  {name:'Ugly Number II',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/ugly-number-ii/',company:'Google,Amazon'},
+  {name:'Super Ugly Number',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/super-ugly-number/',company:'Google'},
+  {name:'Add Digits',diff:'Easy',topic:'Math',url:'https://leetcode.com/problems/add-digits/',company:'Microsoft'},
+  {name:'Fraction to Recurring Decimal',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/fraction-to-recurring-decimal/',company:'Google'},
+  {name:'Max Points on a Line',diff:'Hard',topic:'Math',url:'https://leetcode.com/problems/max-points-on-a-line/',company:'Google,Apple'},
+  {name:'Minimum Moves to Equal Array Elements',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/',company:'Amazon'},
+  {name:'Largest Divisible Subset',diff:'Medium',topic:'Math',url:'https://leetcode.com/problems/largest-divisible-subset/',company:'Google,Amazon'},
+
+  // ── BIT MANIPULATION ADVANCED (6) ──
+  {name:'Repeated DNA Sequences (Bit)',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/repeated-dna-sequences/',company:'LinkedIn'},
+  {name:'Total Hamming Distance',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/total-hamming-distance/',company:'Facebook'},
+  {name:'Maximum Product of Word Lengths',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/maximum-product-of-word-lengths/',company:'Google'},
+  {name:'UTF-8 Validation',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/utf-8-validation/',company:'Facebook'},
+  {name:'Decode XORed Array',diff:'Easy',topic:'Bit Manipulation',url:'https://leetcode.com/problems/decode-xored-array/',company:'Google'},
+  {name:'Minimum Flips to Make a OR b Equal to c',diff:'Medium',topic:'Bit Manipulation',url:'https://leetcode.com/problems/minimum-flips-to-make-a-or-b-equal-to-c/',company:'Amazon'},
+
+  // ── RECURSION ADVANCED (5) ──
+  {name:'Strobogrammatic Number II',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems/strobogrammatic-number-ii/',company:'Google'},
+  {name:'Different Ways to Add Parentheses',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems/different-ways-to-add-parentheses/',company:'Google'},
+  {name:'Find All Possible Recipes from Given Supplies',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/',company:'Amazon'},
+  {name:'Count Ways to Build Good Strings',diff:'Medium',topic:'Recursion',url:'https://leetcode.com/problems/count-ways-to-build-good-strings/',company:'Google'},
+  {name:'Permutation Sequence',diff:'Hard',topic:'Recursion',url:'https://leetcode.com/problems/permutation-sequence/',company:'Amazon,Google'},
+
+  // ── DESIGN / SYSTEM (8) ──
+  {name:'Design HashMap',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/design-hashmap/',company:'Amazon,Google'},
+  {name:'Design HashSet',diff:'Easy',topic:'Arrays',url:'https://leetcode.com/problems/design-hashset/',company:'Amazon'},
+  {name:'LFU Cache',diff:'Hard',topic:'Linked List',url:'https://leetcode.com/problems/lfu-cache/',company:'Amazon,Google,Microsoft'},
+  {name:'Design Browser History',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/design-browser-history/',company:'Amazon'},
+  {name:'Design Hit Counter',diff:'Medium',topic:'Stack/Queue',url:'https://leetcode.com/problems/design-hit-counter/',company:'Dropbox,Google,Twitter'},
+  {name:'Design Tic-Tac-Toe',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/design-tic-tac-toe/',company:'Zenefits,Amazon,Microsoft'},
+  {name:'Insert Delete GetRandom O(1)',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/insert-delete-getrandom-o1/',company:'Facebook,Twitter,Amazon'},
+  {name:'Design Snake Game',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/design-snake-game/',company:'Amazon'},
+
+  // ── INTERVAL PROBLEMS (5) ──
+  {name:'Meeting Rooms',diff:'Easy',topic:'Sorting',url:'https://leetcode.com/problems/meeting-rooms/',company:'Facebook,Amazon,Microsoft'},
+  {name:'Employee Free Time',diff:'Hard',topic:'Sorting',url:'https://leetcode.com/problems/employee-free-time/',company:'Airbnb,Google'},
+  {name:'Minimum Interval to Include Each Query',diff:'Hard',topic:'Sorting',url:'https://leetcode.com/problems/minimum-interval-to-include-each-query/',company:'Google'},
+  {name:'Data Stream as Disjoint Intervals',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/data-stream-as-disjoint-intervals/',company:'Google'},
+  {name:'Count Integers in Intervals',diff:'Hard',topic:'Binary Search',url:'https://leetcode.com/problems/count-integers-in-intervals/',company:'Google'},
+
+  // ── UNION FIND (6) ──
+  {name:'Number of Provinces (Union Find)',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/number-of-provinces/',company:'Google'},
+  {name:'Most Stones Removed with Same Row or Column',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/',company:'Google'},
+  {name:'Smallest String With Swaps',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/smallest-string-with-swaps/',company:'Amazon'},
+  {name:'Satisfiability of Equality Equations',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/satisfiability-of-equality-equations/',company:'Google'},
+  {name:'Number of Operations to Make Network Connected',diff:'Medium',topic:'Graphs',url:'https://leetcode.com/problems/number-of-operations-to-make-network-connected/',company:'Amazon'},
+  {name:'Making a Large Island',diff:'Hard',topic:'Graphs',url:'https://leetcode.com/problems/making-a-large-island/',company:'Google,Amazon'},
+
+  // ── SEGMENT TREE / FENWICK (4) ──
+  {name:'Range Sum Query - Mutable',diff:'Medium',topic:'Arrays',url:'https://leetcode.com/problems/range-sum-query-mutable/',company:'Amazon,Google'},
+  {name:'Count of Smaller Numbers After Self (BIT)',diff:'Hard',topic:'Arrays',url:'https://leetcode.com/problems/count-of-smaller-numbers-after-self/',company:'Google'},
+  {name:'Range Sum Query 2D - Mutable',diff:'Hard',topic:'Arrays',url:'https://leetcode.com/problems/range-sum-query-2d-mutable/',company:'Google'},
+  {name:'My Calendar I',diff:'Medium',topic:'Binary Search',url:'https://leetcode.com/problems/my-calendar-i/',company:'Google'},
+];
+
+// Used for daily challenge rotation (subset of best problems)
+const DAILY_PROBLEMS = ALL_PROBLEMS_BANK.filter((_,i) => i % 3 === 0).map(p => ({
+  name: p.name, diff: p.diff, topic: p.topic, url: p.url
+}));
+
+function loadDB() {
+  const saved = localStorage.getItem('dsa-forge-db');
+  if (saved) db = JSON.parse(saved);
+  // add sample data if empty
+  if (db.problems.length === 0) {
+    addSampleData();
+  }
+}
+function saveDB() { localStorage.setItem('dsa-forge-db', JSON.stringify(db)); }
+
+function addSampleData() {
+  const REVISION_DAYS = [1, 3, 7, 15, 30];
+  const today = new Date();
+
+  // Assign realistic statuses: first ~80 solved/revision, rest pending
+  // Distribute across past 6 months of dates
+  const samples = ALL_PROBLEMS_BANK.map((p, i) => {
+    // Spread problems across last 180 days
+    const daysAgo = Math.floor((ALL_PROBLEMS_BANK.length - i) * 0.65);
+    const addedDate = new Date(today);
+    addedDate.setDate(addedDate.getDate() - daysAgo);
+    const addedAt = addedDate.toISOString().split('T')[0];
+
+    let status, time, confidence, revisionLevel, nextRevision, revisions;
+
+    if (i < 70) {
+      // First 70: fully mastered (solved + high revision level)
+      status = 'Solved';
+      time = p.diff === 'Easy' ? Math.floor(Math.random()*15)+8 : p.diff === 'Medium' ? Math.floor(Math.random()*20)+15 : Math.floor(Math.random()*25)+25;
+      confidence = p.diff === 'Easy' ? 5 : Math.floor(Math.random()*2)+3;
+      revisionLevel = 5;
+      nextRevision = null;
+      revisions = [addedAt];
+    } else if (i < 120) {
+      // Next 50: solved, mid-revision
+      status = 'Solved';
+      time = p.diff === 'Easy' ? Math.floor(Math.random()*20)+10 : p.diff === 'Medium' ? Math.floor(Math.random()*25)+18 : Math.floor(Math.random()*30)+30;
+      confidence = Math.floor(Math.random()*2)+3;
+      revisionLevel = Math.floor(Math.random()*2)+2;
+      const futureOffset = REVISION_DAYS[revisionLevel - 1];
+      nextRevision = getDateStr(futureOffset - Math.floor(Math.random()*futureOffset));
+      revisions = [addedAt];
+    } else if (i < 160) {
+      // Next 40: due for revision (some today)
+      status = 'Revision';
+      time = p.diff === 'Easy' ? Math.floor(Math.random()*25)+15 : Math.floor(Math.random()*35)+20;
+      confidence = Math.floor(Math.random()*2)+2;
+      revisionLevel = 1;
+      nextRevision = i < 145 ? getTodayStr() : getDateStr(Math.floor(Math.random()*5)+1);
+      revisions = [];
+    } else {
+      // Rest: pending
+      status = 'Pending';
+      time = 0;
+      confidence = 0;
+      revisionLevel = 0;
+      nextRevision = null;
+      revisions = [];
+    }
+
+    return {
+      id: String(i + 1),
+      name: p.name,
+      platform: 'LeetCode',
+      difficulty: p.diff,
+      topic: p.topic,
+      status,
+      time,
+      confidence,
+      url: p.url || '',
+      company: p.company || '',
+      notes: status !== 'Pending' ? generateNote(p.name, p.topic, p.diff) : '',
+      addedAt,
+      revisions,
+      nextRevision,
+      revisionLevel
+    };
+  });
+
+  db.problems = samples;
+  db.streak = 12;
+  db.lastActive = getTodayStr();
+  db.activity = generateSampleActivity();
+  saveDB();
+}
+
+function generateNote(name, topic, diff) {
+  const notes = {
+    'Arrays': `## Approach\n- Consider sorting or using a HashMap\n- Think about O(n) vs O(n log n) trade-offs\n\n## Complexity\n- Time: O(n)\n- Space: O(n)`,
+    'Dynamic Programming': `## Approach\n- Define dp state carefully\n- Identify base cases\n- Write recurrence relation\n\n## Key Pattern\n- Bottom-up DP is usually more efficient`,
+    'Graphs': `## Approach\n- BFS for shortest path, DFS for connectivity\n- Use visited array to avoid cycles\n\n## Complexity\n- Time: O(V + E)\n- Space: O(V)`,
+    'Trees': `## Approach\n- Consider recursive DFS\n- Think about what to return from each call\n\n## Edge Cases\n- Empty tree (null root)\n- Single node tree`,
+    'Linked List': `## Approach\n- Use slow/fast pointer when needed\n- Draw the pointer manipulation\n\n## Common Mistakes\n- Forgetting to update pointers in correct order`,
+    'Sliding Window': `## Approach\n- Expand right, shrink left\n- Track window state with HashMap/counter\n\n## Template\n\`\`\`\nleft = 0\nfor right in range(n):\n    # expand window\n    while invalid:\n        # shrink window\n\`\`\``,
+    'Binary Search': `## Approach\n- lo, hi, mid pattern\n- Decide: left-biased or right-biased\n\n## Template\n\`\`\`\nlo, hi = 0, n-1\nwhile lo <= hi:\n    mid = (lo+hi)//2\n\`\`\``,
+    'Backtracking': `## Approach\n- Choose → Explore → Unchoose\n- Prune early when possible\n\n## Template\n\`\`\`\ndef backtrack(state):\n    if goal: results.add(state)\n    for choice in choices:\n        make choice\n        backtrack(state)\n        undo choice\n\`\`\``,
+  };
+  return notes[topic] || `## Approach\n- Solved ${diff} level ${topic} problem\n- Review the key pattern\n\n## Notes\n- Practice similar problems to reinforce`;
+}
+
+function generateSampleActivity() {
+  const act = {};
+  const today = new Date();
+  for (let i = 180; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    if (Math.random() > 0.55) act[key] = Math.ceil(Math.random() * 5);
+  }
+  return act;
+}
+
+function getTodayStr() { return new Date().toISOString().split('T')[0]; }
+function getDateStr(daysFromNow) {
+  const d = new Date();
+  d.setDate(d.getDate() + daysFromNow);
+  return d.toISOString().split('T')[0];
+}
+
+// ============ NAVIGATION ============
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+  // manually set active
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().includes(page.replace('-',' ').toLowerCase().split(' ')[0])) {
+      n.classList.add('active');
+    }
+  });
+  // trigger render
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'problems') { renderProblems(); populateTopicFilter(); }
+  if (page === 'revision') renderRevision();
+  if (page === 'topics') renderTopics();
+  if (page === 'analytics') renderAnalytics();
+  if (page === 'notes') renderNotes();
+}
+
+// ============ DASHBOARD ============
+function renderDashboard() {
+  const today = getTodayStr();
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const solved = db.problems.filter(p => p.status === 'Solved').length;
+  const revToday = db.problems.filter(p => p.nextRevision === today).length;
+  document.getElementById('stat-solved').textContent = solved;
+  document.getElementById('stat-revision').textContent = revToday;
+  document.getElementById('stat-total').textContent = db.problems.length;
+  document.getElementById('stat-streak').textContent = db.streak + '🔥';
+  document.getElementById('sidebar-streak').textContent = db.streak;
+
+  // Heatmap
+  renderHeatmap();
+
+  // Daily challenge
+  const dpIdx = new Date().getDate() % DAILY_PROBLEMS.length;
+  const dp = DAILY_PROBLEMS[dpIdx];
+  document.getElementById('daily-problem-name').textContent = dp.name;
+  document.getElementById('daily-problem-tags').innerHTML = `
+    <span class="badge badge-${dp.diff.toLowerCase()}">${dp.diff}</span>
+    <span class="badge-topic">${dp.topic}</span>
+    <a href="${dp.url}" target="_blank" style="font-size:11px;color:var(--accent2);text-decoration:none;margin-left:4px">↗ Open</a>
+  `;
+
+  // Topic progress
+  const topicHtml = TOPICS.slice(0, 8).map(t => {
+    const topicProbs = db.problems.filter(p => p.topic === t);
+    const solved = topicProbs.filter(p => p.status === 'Solved').length;
+    const pct = topicProbs.length > 0 ? Math.round((solved / topicProbs.length) * 100) : 0;
+    const color = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--yellow)' : 'var(--red)';
+    return `
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="font-weight:600">${t}</span>
+          <span style="color:var(--text2)">${solved}/${topicProbs.length} · ${pct}%</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('dash-topics').innerHTML = topicHtml;
+
+  // Difficulty chart
+  const easy = db.problems.filter(p => p.difficulty === 'Easy').length;
+  const medium = db.problems.filter(p => p.difficulty === 'Medium').length;
+  const hard = db.problems.filter(p => p.difficulty === 'Hard').length;
+  renderDiffChart(easy, medium, hard);
+}
+
+function renderHeatmap() {
+  const container = document.getElementById('heatmap-container');
+  const weeks = 26;
+  const today = new Date();
+  let html = '<div class="heatmap-row" style="gap:3px">';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let monthLabels = '<div style="display:flex;gap:0;font-size:10px;color:var(--text3);margin-bottom:4px;overflow:hidden">';
+
+  for (let w = weeks - 1; w >= 0; w--) {
+    for (let d = 6; d >= 0; d--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - (w * 7 + d));
+      if (date > today) continue;
+      const key = date.toISOString().split('T')[0];
+      const count = Math.min(db.activity[key] || 0, 5);
+      const title = `${key}: ${count} problems`;
+      html += `<div class="heatmap-cell" data-count="${count}" title="${title}" style="cursor:pointer"></div>`;
+    }
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+let diffChartInst = null;
+function renderDiffChart(easy, medium, hard) {
+  if (diffChartInst) diffChartInst.destroy();
+  const ctx = document.getElementById('diffChart');
+  if (!ctx) return;
+  diffChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Easy', 'Medium', 'Hard'],
+      datasets: [{
+        data: [easy || 0, medium || 0, hard || 0],
+        backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      cutout: '65%'
+    }
+  });
+  // inject legend below
+  const parent = ctx.parentElement;
+  const old = parent.querySelector('.diff-legend');
+  if (old) old.remove();
+  const leg = document.createElement('div');
+  leg.className = 'diff-legend';
+  leg.style.cssText = 'display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:12px;color:var(--text2)';
+  leg.innerHTML = `
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#22c55e"></span>Easy ${easy}</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#f59e0b"></span>Medium ${medium}</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#ef4444"></span>Hard ${hard}</span>
+  `;
+  parent.appendChild(leg);
+}
+
+function markDailyDone() {
+  const today = getTodayStr();
+  if (!db.activity[today]) db.activity[today] = 0;
+  db.activity[today]++;
+  if (db.lastActive !== today) {
+    db.streak++;
+    db.lastActive = today;
+  }
+  saveDB();
+  renderDashboard();
+  showToast('Daily challenge marked complete! 🎉');
+}
+
+// ============ PROBLEMS ============
+let editingId = null;
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Add New Problem';
+  ['f-name','f-time','f-url','f-company','f-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-difficulty').value = 'Easy';
+  document.getElementById('f-status').value = 'Solved';
+  document.getElementById('f-confidence').value = '';
+  openModal('add-modal');
+}
+
+function openEditModal(id) {
+  const p = db.problems.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Edit Problem';
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-platform').value = p.platform;
+  document.getElementById('f-difficulty').value = p.difficulty;
+  document.getElementById('f-topic').value = p.topic;
+  document.getElementById('f-status').value = p.status;
+  document.getElementById('f-time').value = p.time || '';
+  document.getElementById('f-confidence').value = p.confidence || '';
+  document.getElementById('f-url').value = p.url || '';
+  document.getElementById('f-company').value = p.company || '';
+  document.getElementById('f-notes').value = p.notes || '';
+  openModal('add-modal');
+}
+
+function saveProblem() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { showToast('Problem name is required!', 'error'); return; }
+
+  const REVISION_DAYS = [1, 3, 7, 15, 30];
+  const today = getTodayStr();
+
+  if (editingId) {
+    const idx = db.problems.findIndex(x => x.id === editingId);
+    if (idx >= 0) {
+      const status = document.getElementById('f-status').value;
+      db.problems[idx] = {
+        ...db.problems[idx],
+        name, platform: document.getElementById('f-platform').value,
+        difficulty: document.getElementById('f-difficulty').value,
+        topic: document.getElementById('f-topic').value,
+        status, time: parseInt(document.getElementById('f-time').value) || 0,
+        confidence: parseInt(document.getElementById('f-confidence').value) || 0,
+        url: document.getElementById('f-url').value,
+        company: document.getElementById('f-company').value,
+        notes: document.getElementById('f-notes').value,
+      };
+      if (status === 'Solved' && !db.problems[idx].revisionLevel) {
+        db.problems[idx].revisionLevel = 1;
+        db.problems[idx].nextRevision = getDateStr(REVISION_DAYS[0]);
+      }
+    }
+  } else {
+    const status = document.getElementById('f-status').value;
+    const revLevel = status === 'Solved' ? 1 : 0;
+    const nextRev = status === 'Solved' ? getDateStr(REVISION_DAYS[0]) : null;
+
+    db.problems.push({
+      id: Date.now().toString(),
+      name,
+      platform: document.getElementById('f-platform').value,
+      difficulty: document.getElementById('f-difficulty').value,
+      topic: document.getElementById('f-topic').value,
+      status,
+      time: parseInt(document.getElementById('f-time').value) || 0,
+      confidence: parseInt(document.getElementById('f-confidence').value) || 0,
+      url: document.getElementById('f-url').value,
+      company: document.getElementById('f-company').value,
+      notes: document.getElementById('f-notes').value,
+      addedAt: today,
+      revisions: [],
+      nextRevision: nextRev,
+      revisionLevel: revLevel
+    });
+
+    if (!db.activity[today]) db.activity[today] = 0;
+    db.activity[today]++;
+    if (db.lastActive !== today) { db.streak++; db.lastActive = today; }
+  }
+
+  saveDB();
+  closeModal('add-modal');
+  renderProblems();
+  updateNavBadges();
+  showToast(editingId ? 'Problem updated!' : 'Problem added! Revision scheduled 📅');
+}
+
+function deleteProblem(id) {
+  if (!confirm('Delete this problem?')) return;
+  db.problems = db.problems.filter(p => p.id !== id);
+  saveDB();
+  renderProblems();
+  updateNavBadges();
+  showToast('Problem deleted');
+}
+
+function renderProblems() {
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const diff = document.getElementById('filter-difficulty')?.value;
+  const status = document.getElementById('filter-status')?.value;
+  const topic = document.getElementById('filter-topic')?.value;
+
+  let probs = [...db.problems];
+  if (search) probs = probs.filter(p => p.name.toLowerCase().includes(search) || p.topic.toLowerCase().includes(search) || (p.company||'').toLowerCase().includes(search));
+  if (diff) probs = probs.filter(p => p.difficulty === diff);
+  if (status) probs = probs.filter(p => p.status === status);
+  if (topic) probs = probs.filter(p => p.topic === topic);
+
+  const tbody = document.getElementById('problems-tbody');
+  if (!tbody) return;
+
+  if (probs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--text2);padding:30px">No problems found. Add your first problem!</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = probs.map((p, i) => {
+    const conf = p.confidence || 0;
+    const stars = '⭐'.repeat(conf) + '☆'.repeat(5-conf);
+    const companyTags = (p.company || '').split(',').filter(Boolean).map(c => `<span class="badge-company">${c.trim()}</span>`).join(' ');
+    return `<tr>
+      <td style="color:var(--text3);font-family:monospace">${i+1}</td>
+      <td>
+        <div style="font-weight:700;font-size:13px">${p.url ? `<a href="${p.url}" target="_blank" style="color:var(--text);text-decoration:none;hover:color:var(--accent2)">${p.name} ↗</a>` : p.name}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">${companyTags}</div>
+      </td>
+      <td><span class="badge badge-${p.difficulty.toLowerCase()}">${p.difficulty}</span></td>
+      <td><span class="badge-topic">${p.topic}</span></td>
+      <td><span class="badge badge-${p.status.toLowerCase()}">${p.status}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${p.platform}</td>
+      <td style="font-family:monospace;font-size:12px;color:var(--text2)">${p.time ? p.time+'m' : '—'}</td>
+      <td style="font-size:13px" title="Confidence: ${conf}/5">${stars}</td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-secondary btn-sm" onclick="openEditModal('${p.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProblem('${p.id}')">🗑</button>
+          ${p.notes ? `<button class="btn btn-secondary btn-sm" onclick="viewNoteInline('${p.id}')">📝</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function viewNoteInline(id) {
+  const p = db.problems.find(x => x.id === id);
+  if (!p || !p.notes) return;
+  showPage('notes');
+  setTimeout(() => viewNoteContent(p.name, p.notes, p.topic), 100);
+}
+
+function populateTopicFilter() {
+  const sel = document.getElementById('filter-topic');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">All Topics</option>' + TOPICS.map(t => `<option ${t === current ? 'selected' : ''}>${t}</option>`).join('');
+}
+
+// ============ REVISION ============
+const REVISION_SCHEDULE = [1, 3, 7, 15, 30];
+
+function completeRevision(id) {
+  const p = db.problems.find(x => x.id === id);
+  if (!p) return;
+  const today = getTodayStr();
+  p.revisions = p.revisions || [];
+  p.revisions.push(today);
+  p.revisionLevel = Math.min((p.revisionLevel || 1) + 1, REVISION_SCHEDULE.length);
+  if (p.revisionLevel < REVISION_SCHEDULE.length) {
+    p.nextRevision = getDateStr(REVISION_SCHEDULE[p.revisionLevel - 1]);
+  } else {
+    p.nextRevision = null;
+    p.status = 'Solved';
+  }
+  if (!db.activity[today]) db.activity[today] = 0;
+  db.activity[today]++;
+  saveDB();
+  renderRevision();
+  updateNavBadges();
+  showToast('Revision complete! Next: ' + (p.nextRevision ? p.nextRevision : 'Mastered! 🏆'));
+}
+
+function renderRevision() {
+  const today = getTodayStr();
+  const todayProbs = db.problems.filter(p => p.nextRevision === today);
+  const upcomingProbs = db.problems.filter(p => p.nextRevision && p.nextRevision > today).sort((a,b) => a.nextRevision.localeCompare(b.nextRevision));
+  const completedProbs = db.problems.filter(p => p.revisions && p.revisions.length > 0);
+
+  renderRevList('rev-list-today', todayProbs, 'today');
+  renderRevList('rev-list-upcoming', upcomingProbs, 'upcoming');
+  renderRevList('rev-list-completed', completedProbs, 'completed');
+}
+
+function renderRevList(elId, probs, type) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (probs.length === 0) {
+    el.innerHTML = `<div style="text-align:center;color:var(--text2);padding:30px;font-size:13px">${type === 'today' ? '🎉 No revisions due today!' : type === 'upcoming' ? 'No upcoming revisions' : 'No revisions completed yet'}</div>`;
+    return;
+  }
+  const today = getTodayStr();
+  el.innerHTML = probs.map(p => {
+    const daysUntil = p.nextRevision ? Math.ceil((new Date(p.nextRevision) - new Date(today)) / 86400000) : null;
+    let dueClass = 'future', dueText = p.nextRevision || '—';
+    if (p.nextRevision === today) { dueClass = 'today'; dueText = 'DUE TODAY'; }
+    else if (daysUntil !== null && daysUntil <= 2) { dueClass = 'soon'; dueText = `In ${daysUntil} day${daysUntil === 1 ? '' : 's'}`; }
+    else if (daysUntil !== null) { dueText = `In ${daysUntil} days`; }
+
+    const revStage = p.revisionLevel <= REVISION_SCHEDULE.length ? `Stage ${p.revisionLevel}/${REVISION_SCHEDULE.length}` : 'Mastered';
+    return `<div class="revision-card">
+      <span class="revision-due ${dueClass}">${dueText}</span>
+      <div class="revision-info">
+        <div class="revision-name">${p.url ? `<a href="${p.url}" target="_blank" style="color:var(--text);text-decoration:none">${p.name} ↗</a>` : p.name}</div>
+        <div class="revision-meta">
+          <span class="badge badge-${p.difficulty.toLowerCase()}" style="margin-right:6px">${p.difficulty}</span>
+          <span class="badge-topic" style="margin-right:6px">${p.topic}</span>
+          <span style="color:var(--text3)">${revStage} · ${(p.revisions||[]).length} revisions done</span>
+        </div>
+      </div>
+      ${type !== 'completed' ? `<button class="btn btn-success btn-sm" onclick="completeRevision('${p.id}')">✓ Done</button>` : '<span style="font-size:20px">✅</span>'}
+      <button class="btn btn-secondary btn-sm" onclick="openEditModal('${p.id}')">✏️</button>
+    </div>`;
+  }).join('');
+}
+
+function switchRevTab(el, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.revision-tab').forEach(t => t.style.display = 'none');
+  document.getElementById('revision-' + tab).style.display = 'block';
+}
+
+// ============ TOPICS ============
+function renderTopics() {
+  const grid = document.getElementById('topics-grid');
+  if (!grid) return;
+  grid.innerHTML = TOPICS.map(t => {
+    const probs = db.problems.filter(p => p.topic === t);
+    const solved = probs.filter(p => p.status === 'Solved').length;
+    const pct = probs.length > 0 ? Math.round((solved / probs.length) * 100) : 0;
+    const color = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--yellow)' : pct > 0 ? 'var(--orange)' : 'var(--text3)';
+    const easy = probs.filter(p => p.difficulty === 'Easy').length;
+    const med = probs.filter(p => p.difficulty === 'Medium').length;
+    const hard = probs.filter(p => p.difficulty === 'Hard').length;
+    return `<div class="topic-card" onclick="filterByTopic('${t}')">
+      <div class="topic-card-name">${t}</div>
+      <div class="topic-card-stats">
+        <span>${solved}/${probs.length} solved</span>
+        <span style="color:${color};font-weight:700">${pct}%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;font-size:11px">
+        <span style="color:var(--easy)">${easy}E</span>
+        <span style="color:var(--medium)">${med}M</span>
+        <span style="color:var(--hard)">${hard}H</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterByTopic(t) {
+  showPage('problems');
+  setTimeout(() => {
+    document.getElementById('filter-topic').value = t;
+    renderProblems();
+  }, 50);
+}
+
+// ============ ANALYTICS ============
+let topicChartInst = null, timeChartInst = null;
+function renderAnalytics() {
+  const solved = db.problems.filter(p => p.status === 'Solved');
+  const total = db.problems.length;
+  const accuracy = total > 0 ? Math.round((solved.length / total) * 100) : 0;
+  const avgTime = solved.length > 0 ? Math.round(solved.reduce((s,p) => s + (p.time||0), 0) / solved.length) : 0;
+
+  // Weakest topic
+  let weakest = '—', weakestPct = 100;
+  TOPICS.forEach(t => {
+    const probs = db.problems.filter(p => p.topic === t);
+    if (probs.length >= 2) {
+      const pct = (probs.filter(p => p.status === 'Solved').length / probs.length) * 100;
+      if (pct < weakestPct) { weakestPct = pct; weakest = t; }
+    }
+  });
+
+  const avgConf = solved.length > 0 ? (solved.reduce((s,p) => s + (p.confidence||0), 0) / solved.length).toFixed(1) : 0;
+
+  document.getElementById('ana-accuracy').textContent = accuracy + '%';
+  document.getElementById('ana-avgtime').textContent = avgTime + 'm';
+  document.getElementById('ana-weakest').textContent = weakest === '—' ? '—' : weakest.substring(0,3) + '..';
+  document.getElementById('ana-confidence').textContent = avgConf + '/5';
+
+  // Topic chart
+  const topicData = TOPICS.map(t => db.problems.filter(p => p.topic === t).length).filter((v,i) => v > 0 ? true : false);
+  const topicLabels = TOPICS.filter(t => db.problems.filter(p => p.topic === t).length > 0);
+
+  if (topicChartInst) topicChartInst.destroy();
+  const tCtx = document.getElementById('topicChart');
+  if (tCtx && topicLabels.length > 0) {
+    topicChartInst = new Chart(tCtx, {
+      type: 'bar',
+      data: {
+        labels: topicLabels,
+        datasets: [{
+          label: 'Problems',
+          data: topicData,
+          backgroundColor: 'rgba(108,99,255,0.6)',
+          borderColor: 'rgba(108,99,255,1)',
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#9090a8', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { ticks: { color: '#9090a8', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }
+      }
+    });
+  }
+
+  // Time distribution
+  const timeRanges = {'0-10m':0,'11-20m':0,'21-30m':0,'31-45m':0,'45m+':0};
+  db.problems.forEach(p => {
+    if (!p.time) return;
+    if (p.time <= 10) timeRanges['0-10m']++;
+    else if (p.time <= 20) timeRanges['11-20m']++;
+    else if (p.time <= 30) timeRanges['21-30m']++;
+    else if (p.time <= 45) timeRanges['31-45m']++;
+    else timeRanges['45m+']++;
+  });
+
+  if (timeChartInst) timeChartInst.destroy();
+  const tmCtx = document.getElementById('timeChart');
+  if (tmCtx) {
+    timeChartInst = new Chart(tmCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(timeRanges),
+        datasets: [{
+          data: Object.values(timeRanges),
+          backgroundColor: ['#22c55e','#84cc16','#f59e0b','#f97316','#ef4444'],
+          borderRadius: 4, borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#9090a8', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { ticks: { color: '#9090a8' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }
+      }
+    });
+  }
+
+  // Weak areas
+  const weakAreas = TOPICS.map(t => {
+    const probs = db.problems.filter(p => p.topic === t);
+    if (probs.length === 0) return null;
+    const pct = Math.round((probs.filter(p => p.status === 'Solved').length / probs.length) * 100);
+    return { topic: t, pct, count: probs.length };
+  }).filter(Boolean).sort((a,b) => a.pct - b.pct).slice(0, 5);
+
+  document.getElementById('weak-areas').innerHTML = weakAreas.length === 0
+    ? '<div style="color:var(--text2);font-size:13px">Add more problems to see weak areas</div>'
+    : weakAreas.map(a => `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+          <span style="font-weight:700">${a.topic}</span>
+          <span style="color:${a.pct < 40 ? 'var(--red)' : 'var(--yellow)'}">⚠️ ${a.pct}% mastery (${a.count} problems)</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:${a.pct}%;background:${a.pct < 40 ? 'var(--red)' : 'var(--yellow)'}"></div>
+        </div>
+      </div>`).join('');
+}
+
+// ============ MOCK INTERVIEW ============
+let timerInterval = null, timerSeconds = 45 * 60, timerRunning = false;
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSeconds / 60);
+  const s = timerSeconds % 60;
+  document.getElementById('timer-display').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  if (timerSeconds <= 300) document.getElementById('timer-display').style.color = 'var(--red)';
+  else if (timerSeconds <= 600) document.getElementById('timer-display').style.color = 'var(--yellow)';
+  else document.getElementById('timer-display').style.color = 'var(--accent)';
+}
+
+function startTimer() {
+  if (timerRunning) return;
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    if (timerSeconds <= 0) { clearInterval(timerInterval); timerRunning = false; showToast("Time's up! ⏰", 'warning'); return; }
+    timerSeconds--;
+    updateTimerDisplay();
+  }, 1000);
+}
+function pauseTimer() {
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+function resetTimer() {
+  pauseTimer();
+  timerSeconds = 45 * 60;
+  updateTimerDisplay();
+}
+function setTimerDuration(mins) {
+  pauseTimer();
+  timerSeconds = mins * 60;
+  updateTimerDisplay();
+}
+
+function generateInterviewProblem() {
+  const allProbs = ALL_PROBLEMS_BANK;
+  const p = allProbs[Math.floor(Math.random() * allProbs.length)];
+  const el = document.getElementById('interview-problem-area');
+  el.innerHTML = `
+    <div class="interview-problem animate-in">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span class="badge badge-${(p.difficulty||'Medium').toLowerCase()}">${p.difficulty||'Medium'}</span>
+        <span class="badge-topic">${p.topic||'DSA'}</span>
+      </div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:10px;line-height:1.4">${p.name}</div>
+      ${p.url ? `<a href="${p.url}" target="_blank" style="color:var(--accent2);font-size:12px;text-decoration:none">Open Problem ↗</a>` : ''}
+      <div style="margin-top:14px;display:flex;gap:8px">
+        <button class="btn btn-success btn-sm" onclick="recordInterviewResult('${p.id||'ext'}','${p.name.replace(/'/g,"\\'")}',true)">✓ Solved</button>
+        <button class="btn btn-danger btn-sm" onclick="recordInterviewResult('${p.id||'ext'}','${p.name.replace(/'/g,"\\'")}',false)">✗ Couldn't Solve</button>
+      </div>
+    </div>`;
+}
+
+function recordInterviewResult(id, name, solved) {
+  const session = { id, name, solved, time: (45*60 - timerSeconds), date: new Date().toISOString() };
+  db.sessions = db.sessions || [];
+  db.sessions.unshift(session);
+  saveDB();
+  showToast(solved ? 'Great job! Problem solved 🎉' : 'Keep practicing! Review the solution 📚');
+  const hist = document.getElementById('session-history');
+  hist.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' +
+    db.sessions.slice(0,10).map(s => `
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;padding:8px 12px;background:var(--bg3);border-radius:8px">
+        <span>${s.solved ? '✅' : '❌'}</span>
+        <span style="flex:1;font-weight:600">${s.name}</span>
+        <span style="color:var(--text2);font-size:12px">${Math.round(s.time/60)}m</span>
+        <span style="color:var(--text3);font-size:11px">${new Date(s.date).toLocaleDateString()}</span>
+      </div>`).join('') + '</div>';
+}
+
+// ============ AI ASSISTANT ============
+async function sendAIMessage() {
+  const input = document.getElementById('ai-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  appendMessage(msg, 'user');
+
+  const apiKey = localStorage.getItem('dsa-forge-api-key');
+  if (!apiKey) {
+    appendMessage('Please enter your Anthropic API key in the box on the right to enable AI features. Your key is stored locally only.', 'ai');
+    return;
+  }
+
+  const thinkingEl = appendMessage('Thinking...', 'ai', true);
+
+  const systemPrompt = `You are an expert DSA (Data Structures & Algorithms) tutor helping someone prepare for coding interviews. 
+User's stats: ${db.problems.length} problems tracked, ${db.problems.filter(p=>p.status==='Solved').length} solved.
+Topics covered: ${[...new Set(db.problems.map(p=>p.topic))].join(', ')}.
+Weak topics: ${getWeakTopics().join(', ')}.
+
+Rules:
+- Give hints, not full solutions (unless explicitly asked)
+- Be concise but thorough
+- Use examples and analogies  
+- Format code with backticks
+- Encourage and motivate`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: msg }]
+      })
+    });
+    const data = await resp.json();
+    thinkingEl.remove();
+    if (data.content && data.content[0]) {
+      appendMessage(data.content[0].text, 'ai');
+    } else {
+      appendMessage('Error: ' + (data.error?.message || 'Unknown error'), 'ai');
+    }
+  } catch (e) {
+    thinkingEl.remove();
+    appendMessage('Connection error. Check your API key and try again.', 'ai');
+  }
+}
+
+function getWeakTopics() {
+  return TOPICS.filter(t => {
+    const probs = db.problems.filter(p => p.topic === t);
+    if (probs.length < 2) return false;
+    return (probs.filter(p => p.status === 'Solved').length / probs.length) < 0.5;
+  }).slice(0, 3);
+}
+
+function appendMessage(text, role, temp = false) {
+  const container = document.getElementById('ai-messages');
+  const el = document.createElement('div');
+  el.className = `ai-message ${role} animate-in`;
+  if (role === 'ai' && !temp) {
+    el.innerHTML = text.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  } else {
+    el.textContent = text;
+    if (temp) el.classList.add('pulse');
+  }
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+  return el;
+}
+
+function quickPrompt(text) {
+  document.getElementById('ai-input').value = text;
+  sendAIMessage();
+}
+
+function saveAPIKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) return;
+  localStorage.setItem('dsa-forge-api-key', key);
+  showToast('API key saved! ✓');
+}
+
+// ============ NOTES ============
+function renderNotes() {
+  const list = document.getElementById('notes-list');
+  if (!list) return;
+  if (!db.notes || db.notes.length === 0) {
+    list.innerHTML = '<div style="color:var(--text2);font-size:13px;padding:10px">No notes yet. Add your first note!</div>';
+    return;
+  }
+  list.innerHTML = db.notes.map(n => `
+    <div class="card card-sm" style="cursor:pointer;border-radius:10px" onclick="viewNoteContent('${n.title}','${encodeURIComponent(n.content)}','${n.category}')">
+      <div style="font-weight:700;font-size:13px;margin-bottom:4px">${n.title}</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="badge-topic">${n.category}</span>
+        <span style="font-size:11px;color:var(--text3)">${new Date(n.createdAt).toLocaleDateString()}</span>
+      </div>
+    </div>`).join('');
+}
+
+function viewNoteContent(title, content, category) {
+  const decoded = decodeURIComponent(content);
+  const viewer = document.getElementById('note-viewer');
+  viewer.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="font-size:18px;font-weight:800">${title}</div>
+        <span class="badge-topic" style="margin-top:4px;display:inline-block">${category}</span>
+      </div>
+    </div>
+    <div class="markdown-preview">${marked.parse ? marked.parse(decoded) : decoded}</div>
+  `;
+}
+
+function openNoteModal() { openModal('note-modal'); }
+
+function saveNote() {
+  const title = document.getElementById('note-title').value.trim();
+  const content = document.getElementById('note-content').value.trim();
+  if (!title || !content) { showToast('Title and content required!', 'error'); return; }
+  db.notes = db.notes || [];
+  db.notes.unshift({ id: Date.now().toString(), title, content, category: document.getElementById('note-category').value, createdAt: new Date().toISOString() });
+  saveDB();
+  closeModal('note-modal');
+  renderNotes();
+  showToast('Note saved!');
+}
+
+// ============ UTILS ============
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function updateNavBadges() {
+  document.getElementById('nb-problems').textContent = db.problems.length;
+  const today = getTodayStr();
+  document.getElementById('nb-revision').textContent = db.problems.filter(p => p.nextRevision === today).length;
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('theme-text').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${type==='error'?'var(--red)':type==='warning'?'var(--yellow)':'var(--accent)'};color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;animation:fadeIn 0.3s ease;box-shadow:0 4px 20px rgba(0,0,0,0.3)`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// Click outside modal to close
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+function resetAndReload() {
+  if (!confirm('Reset all data and reload 200 sample problems? Your current data will be lost.')) return;
+  localStorage.removeItem('dsa-forge-db');
+  db = { problems: [], notes: [], sessions: [], streak: 0, lastActive: null, activity: {} };
+  addSampleData();
+  updateNavBadges();
+  renderDashboard();
+  showToast('200 problems loaded! 🚀');
+}
+
+// ============ INIT ============
+loadDB();
+updateNavBadges();
+renderDashboard();
+
+// Show saved API key
+const savedKey = localStorage.getItem('dsa-forge-api-key');
+if (savedKey) document.getElementById('api-key-input').value = savedKey.substring(0,10) + '...';
+</script>
+</body>
+</html>
